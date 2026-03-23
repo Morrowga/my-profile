@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppDispatch } from '@/store/hooks';
 import { setActiveSection, startTransition, endTransition, SectionId } from '@/store/slices/navigationSlice';
+import { CircleSmall, Terminal } from 'lucide-react';
 
 const NAMED = [
   { id: 'about',        label: 'About',    rx: 155, ry: 58, size: 20, speed: 0.0024, startAngle: Math.PI * (0/3),  color: '#41515b', ring: false },
@@ -23,6 +24,8 @@ const ALL_PLANETS = [...NAMED, ...RAW];
 
 export default function Hero() {
   const anglesRef  = useRef<number[]>(ALL_PLANETS.map(p => p.startAngle));
+  const moonAngleRef = useRef(0);
+  const [moonPos, setMoonPos] = useState({ x: 0, y: 0 });
   const dispatch   = useAppDispatch();
   const [hovered,   setHovered]   = useState<string | null>(null);
   const [positions, setPositions] = useState<{ id: string; x: number; y: number; z: number }[]>([]);
@@ -56,12 +59,25 @@ export default function Hero() {
     let id: number;
     const tick = () => {
       anglesRef.current = anglesRef.current.map((a, i) => a + ALL_PLANETS[i].speed);
-      setPositions(ALL_PLANETS.map((p, i) => ({
+      moonAngleRef.current += 0.008; // moon orbits faster than planets
+
+      const newPositions = ALL_PLANETS.map((p, i) => ({
         id: p.id,
         x: cx + Math.cos(anglesRef.current[i]) * p.rx,
         y: cy + Math.sin(anglesRef.current[i]) * p.ry,
         z: Math.sin(anglesRef.current[i]),
-      })));
+      }));
+
+      // Moon orbits around Projects planet
+      const about = newPositions.find(p => p.id === 'about');
+      if (about) {
+        setMoonPos({
+          x: about.x + Math.cos(moonAngleRef.current) * 18,
+          y: about.y + Math.sin(moonAngleRef.current) * 8,
+        });
+      }
+
+      setPositions(newPositions);
       id = requestAnimationFrame(tick);
     };
     tick();
@@ -144,6 +160,95 @@ export default function Hero() {
 
       {/* ── Solar system — flex: 1 fills remaining height ── */}
       <div ref={solarRef} style={{ flex: 1, width: '100%', position: 'relative' }}>
+        {/* ── Galaxy background ── */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          overflow: 'hidden',
+          zIndex: 0,
+        }}>
+          <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0 }}>
+            <defs>
+              {/* Core glow — bright center */}
+              <radialGradient id="galaxyCore" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stopColor="#FFF8E7" stopOpacity="0.35" />
+                <stop offset="15%"  stopColor="#FFE4A0" stopOpacity="0.25" />
+                <stop offset="35%"  stopColor="#C8A96E" stopOpacity="0.15" />
+                <stop offset="60%"  stopColor="#7B6FA0" stopOpacity="0.08" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0"    />
+              </radialGradient>
+
+              {/* Disk — wide elliptical spread */}
+              <radialGradient id="galaxyDisk" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stopColor="#A8C4E0" stopOpacity="0.12" />
+                <stop offset="40%"  stopColor="#6B8FBF" stopOpacity="0.07" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0"    />
+              </radialGradient>
+
+              {/* Dust lane colors */}
+              <radialGradient id="dustWarm" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stopColor="#8B6914" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0"    />
+              </radialGradient>
+
+              <filter id="galaxyBlur">
+                <feGaussianBlur stdDeviation="18" />
+              </filter>
+              <filter id="coreBlur">
+                <feGaussianBlur stdDeviation="6" />
+              </filter>
+              <filter id="softBlur">
+                <feGaussianBlur stdDeviation="40" />
+              </filter>
+            </defs>
+
+            {/* Outer wide disk — tilted ellipse */}
+            <ellipse
+              cx="50%" cy="50%"
+              rx="42%" ry="12%"
+              fill="url(#galaxyDisk)"
+              filter="url(#softBlur)"
+              transform={`rotate(-25, ${solar.w / 2}, ${solar.h / 2})`}
+            />
+
+            {/* Mid disk — blue spiral arm tint */}
+            <ellipse
+              cx="50%" cy="50%"
+              rx="30%" ry="7%"
+              fill="url(#galaxyDisk)"
+              filter="url(#galaxyBlur)"
+              opacity="0.8"
+              transform={`rotate(-25, ${solar.w / 2}, ${solar.h / 2})`}
+            />
+
+            {/* Warm dust lanes */}
+            <ellipse
+              cx="50%" cy="50%"
+              rx="22%" ry="4%"
+              fill="url(#dustWarm)"
+              filter="url(#galaxyBlur)"
+              transform={`rotate(-25, ${solar.w / 2}, ${solar.h / 2})`}
+            />
+
+            {/* Bright core */}
+            <ellipse
+              cx="50%" cy="50%"
+              rx="8%" ry="5%"
+              fill="url(#galaxyCore)"
+              filter="url(#coreBlur)"
+              transform={`rotate(-25, ${solar.w / 2}, ${solar.h / 2})`}
+            />
+
+            {/* Hot white core center */}
+            <ellipse
+              cx="50%" cy="50%"
+              rx="3%" ry="2%"
+              fill="#FFF8E7"
+              opacity="0.2"
+              filter="url(#coreBlur)"
+              transform={`rotate(-25, ${solar.w / 2}, ${solar.h / 2})`}
+            />
+          </svg>
+        </div>
         {solar.w > 0 && (
           <svg width={solar.w} height={solar.h}
             style={{ position: 'absolute', inset: 0, zIndex: 1, overflow: 'visible' }}
@@ -159,13 +264,27 @@ export default function Hero() {
                 <stop offset="0%"   stopColor="#FFD97D" stopOpacity="0.15" />
                 <stop offset="100%" stopColor="#FF9B3D" stopOpacity="0"    />
               </radialGradient>
-              {ALL_PLANETS.map(p => (
+              {ALL_PLANETS.filter(p => p.id !== 'about').map(p => (
                 <radialGradient key={`g-${p.id}`} id={`g-${p.id}`} cx="35%" cy="30%" r="65%">
                   <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.95" />
                   <stop offset="50%"  stopColor={p.color}  stopOpacity="0.75" />
                   <stop offset="100%" stopColor="#111111"  stopOpacity="0.7"  />
                 </radialGradient>
               ))}
+
+              <radialGradient id="g-about" cx="35%" cy="30%" r="65%">
+              <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.95" />
+              {/* <stop offset="20%"  stopColor="#4B9FE1" stopOpacity="0.9"  /> */}
+              <stop offset="50%"  stopColor="#3A8BD4" stopOpacity="0.85" />  {/* deep ocean */}
+              <stop offset="60%"  stopColor="#2E7D52" stopOpacity="0.8"  />  {/* land starts late */}
+              <stop offset="78%"  stopColor="#1B4D2E" stopOpacity="0.75" />  {/* land ends quick */}
+              <stop offset="100%" stopColor="#111111" stopOpacity="0.7"  />
+            </radialGradient>
+              <radialGradient id="moonGrad" cx="35%" cy="30%" r="65%">
+                <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.9" />
+                <stop offset="50%"  stopColor="#C8C8C8" stopOpacity="0.7" />
+                <stop offset="100%" stopColor="#444444" stopOpacity="0.6" />
+              </radialGradient>
             </defs>
 
             <ellipse cx={cx} cy={cy} rx={155} ry={58}
@@ -180,6 +299,18 @@ export default function Hero() {
               fill="rgba(255,255,255,0.3)" fontSize="8"
               fontFamily="Space Mono, monospace" letterSpacing="3">ME</text>
             {sorted.filter(p => p.z >= 0).map(renderPlanet)}
+            {moonPos.x > 0 && (
+              <g opacity={0.85}>
+                <circle
+                  cx={moonPos.x}
+                  cy={moonPos.y}
+                  r={5}
+                  fill="url(#moonGrad)"
+                  stroke="rgba(255,255,255,0.15)"
+                  strokeWidth="0.5"
+                />
+              </g>
+            )}
           </svg>
         )}
 
@@ -200,8 +331,18 @@ export default function Hero() {
                   borderRadius: 5, padding: '0.3rem 0.8rem', whiteSpace: 'nowrap',
                 }}
               >
-                <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '0.76rem', color: '#fff', letterSpacing: '0.12em' }}>
-                  → {p.label}
+                <span style={{ 
+                  fontFamily: 'Syne, sans-serif', 
+                  fontWeight: 700, 
+                  fontSize: '0.76rem', 
+                  color: '#fff', 
+                  letterSpacing: '0.12em',
+                  display: 'flex',        // ← add
+                  alignItems: 'center',   // ← add
+                  gap: '0.3rem',          // ← spacing between icon and text
+                }}>
+                  <Terminal style={{ color: 'var(--accent)' }} />
+                  {p.label}
                 </span>
               </motion.div>
             );

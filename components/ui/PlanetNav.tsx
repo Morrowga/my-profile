@@ -4,8 +4,8 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setActiveSection, startTransition, endTransition, SectionId } from '@/store/slices/navigationSlice';
 
 const NAV_PLANETS = [
-  { id: 'hero',         label: 'Home',         size: 14, color: '#FFD97D', ring: false },
-  { id: 'about',        label: 'About',        size: 18, color: '#41515b', ring: false },
+  { id: 'hero',         label: 'Home',         size: 14, color: '#FFD97D', ring: false }, 
+  { id: 'about',        label: 'About',        size: 18, color: '#3A8BD4', ring: false }, 
   { id: 'skills',       label: 'Skills',       size: 16, color: '#5671b9', ring: false },
   { id: 'projects',     label: 'Projects',     size: 20, color: '#fbe6be', ring: true  },
   { id: 'certificates', label: 'Certs',        size: 15, color: '#81654f', ring: false },
