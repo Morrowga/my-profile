@@ -15,7 +15,7 @@ const NAMED = [
 ];
 
 const RAW = Array.from({ length: 2 }, (_, i) => ({
-  id: `raw${i + 1}`, label: '',
+  id: `raw${i + 1}`, label: '.',
   rx: 290, ry: 108, size: 15 + (i % 3) * 3,
   speed: 0.0015, startAngle: (i / 2) * Math.PI * 2,
   color: '#666666', ring: false,
