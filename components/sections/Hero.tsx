@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppDispatch } from '@/store/hooks';
 import { setActiveSection, startTransition, endTransition, SectionId } from '@/store/slices/navigationSlice';
-import { CircleSmall, Terminal } from 'lucide-react';
+import { ZodiacTaurus } from 'lucide-react';
 
 const NAMED = [
   { id: 'about',        label: 'About',    rx: 155, ry: 58, size: 20, speed: 0.0024, startAngle: Math.PI * (0/3),  color: '#41515b', ring: false },
@@ -18,7 +18,7 @@ const RAW = Array.from({ length: 2 }, (_, i) => ({
   id: `raw${i + 1}`, label: 'Raw',
   rx: 290, ry: 108, size: 15 + (i % 3) * 3,
   speed: 0.0015, startAngle: (i / 2) * Math.PI * 2,
-  color: '#666666', ring: i === 1,
+  color: '#666666', ring: false,
 }));
 const ALL_PLANETS = [...NAMED, ...RAW];
 
@@ -345,7 +345,7 @@ export default function Hero() {
                   alignItems: 'center',   // ← add
                   gap: '0.3rem',          // ← spacing between icon and text
                 }}>
-                  <Terminal style={{ color: 'var(--accent)' }} />
+                  <ZodiacTaurus style={{ color: 'var(--accent)' }} />
                   {p.label}
                 </span>
               </motion.div>
