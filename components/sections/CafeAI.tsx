@@ -80,7 +80,7 @@ export default function CafeAI() {
          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem', lineHeight: 1.6 }}>
           <span style={{ color: 'var(--accent)' }}>HuggingFace</span>{' '} / {' '}
           <span style={{ color: 'var(--accent)' }}>LangChain</span>{' '} / {' '}
-          <span style={{ color: 'var(--accent)' }}>Claude</span>{' '} 
+          <span style={{ color: 'var(--accent)' }}>OpenAI</span>{' '} 
         </p>
       </motion.div>
 
