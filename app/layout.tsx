@@ -10,14 +10,6 @@ export const metadata: Metadata = {
     description: 'AI Engineer & Vibe Coder — building intelligent systems with style',
     url: 'https://thihaeung.com',
     siteName: 'Thiha Aung Portfolio',
-    images: [
-      {
-        url: 'https://thihaeung.com/preview/preview.png',  
-        width: 1200,
-        height: 630,
-        alt: 'Thiha Aung — AI Engineer',
-      },
-    ],
     type: 'website',
   },
   twitter: {
