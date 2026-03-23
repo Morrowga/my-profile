@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --bg: #050508;
+  --surface: rgba(255,255,255,0.04);
+  --surface2: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.08);
+  --accent: #4ade80;
+  --accent2: #34d399;
+  --accent3: #86efac;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --glow: rgba(74, 222, 128, 0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.mono { font-family: 'Space Mono', monospace; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .planet-nav-desktop {
+    display: none !important;
+  }
+  .section-content {
+    padding-right: 1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-planet-nav {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-section {
+    padding: 0rem 1rem !important;
+  }
+  .about-terminal {
+    font-size: 0.72rem !important;
+  }
+  .about-terminal pre,
+  .about-terminal div {
+    font-size: 0.72rem !important;
+    word-break: break-all !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-wrapper {
+    padding: 2rem 1.25rem 5rem 1.25rem !important;
+  }
+}
+
+@media (max-width: 768px), (pointer: coarse) {
+  .custom-cursor {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .projects-section {
+    padding: 0rem 1.25rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 0rem 1.25rem !important;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-topbar {
+    padding-top: 3rem !important;
+    /* padding-left: 1.5rem !important; */
+    /* padding-right: 1.5rem !important; */
+    /* align-items: flex-stat !important; */
+  }
+  .hero-topbar p:first-child {
+    font-size: 1.6rem !important;
+  }
+}
