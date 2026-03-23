@@ -41,6 +41,7 @@ export default function Home() {
     <div style={{
       width: '100vw', height: '100vh',
       overflow: 'hidden', position: 'relative', background: '#000',
+      paddingBottom: 20
     }}>
       <Cursor />
       <StarField />
