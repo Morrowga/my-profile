@@ -58,7 +58,7 @@ export const brewRecipe = createAsyncThunk<
       );
     }
      try {
-      const res = await fetch('http://localhost:8000/api/generate-recipe', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-recipe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, tags }),
