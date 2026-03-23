@@ -232,7 +232,7 @@ export default function Certificates() {
   const inView = useInView(ref, { once: true });
 
   return (
-    <section id="certificates" style={{ padding: '0rem 2rem' }}>
+    <section id="certificates" className='certificates-section' style={{ padding: '0rem 2rem' }}>
       <div ref={ref} style={{ maxWidth: 1100, margin: '0 auto' }}>
 
         <motion.div
@@ -279,7 +279,7 @@ export default function Certificates() {
         @media (max-width: 768px) {
           .cert-desktop { display: none !important; }
           .cert-mobile  { display: flex !important; }
-          #certificates { padding: 0rem 1.25rem !important; }
+          #certificates { padding: 0rem 0rem !important; }
         }
       `}</style>
     </section>

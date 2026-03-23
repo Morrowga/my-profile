@@ -58,8 +58,9 @@ body {
 
 @media (max-width: 768px) {
   .about-section {
-    padding: 0rem 1rem !important;
+    padding: 0rem 0rem !important;
   }
+
   .about-terminal {
     font-size: 0.72rem !important;
   }
@@ -72,7 +73,7 @@ body {
 
 @media (max-width: 768px) {
   .section-wrapper {
-    padding: 2rem 1.25rem 5rem 1.25rem !important;
+    padding: 3rem 1.25rem 6.5rem 1.25rem !important;
   }
 }
 
@@ -87,13 +88,23 @@ body {
     grid-template-columns: 1fr !important;
   }
   .projects-section {
-    padding: 0rem 1.25rem !important;
+    padding: 0rem 0rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-solar-container {
+    overflow: hidden !important;
+    touch-action: none !important;
   }
 }
 
 @media (max-width: 768px) {
   .contact-section {
-    padding: 0rem 1.25rem !important;
+    padding: 0rem 0rem !important;
+  }
+  .cafeai-section{
+    padding: 0rem 0rem !important;
   }
   .contact-grid {
     grid-template-columns: 1fr !important;

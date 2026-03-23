@@ -146,7 +146,7 @@ export default function Hero() {
         transition={{ delay: 0.8, duration: 0.8 }}
         className="hero-topbar"
         style={{
-          paddingTop: '2rem', zIndex: 3, pointerEvents: 'none',
+          paddingTop: '6rem', zIndex: 3, pointerEvents: 'none',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem',
         }}
       >
@@ -159,7 +159,11 @@ export default function Hero() {
       </motion.div>
 
       {/* ── Solar system — flex: 1 fills remaining height ── */}
-      <div ref={solarRef} style={{ flex: 1, width: '100%', position: 'relative' }}>
+      <div
+        ref={solarRef}
+        className="hero-solar-container"
+        style={{ flex: 1, width: '100%', position: 'relative' }}
+      >
         {/* ── Galaxy background ── */}
         <div style={{
           position: 'absolute', inset: 0,
@@ -287,10 +291,10 @@ export default function Hero() {
               </radialGradient>
             </defs>
 
-            <ellipse cx={cx} cy={cy} rx={155} ry={58}
+            {/* <ellipse cx={cx} cy={cy} rx={155} ry={58}
               fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="0.7" strokeDasharray="3 9" />
             <ellipse cx={cx} cy={cy} rx={290} ry={108}
-              fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.7" strokeDasharray="3 12" />
+              fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.7" strokeDasharray="3 12" /> */}
 
             <circle cx={cx} cy={cy} r={80} fill="url(#sunHalo)" />
             {sorted.filter(p => p.z < 0).map(renderPlanet)}
@@ -351,7 +355,7 @@ export default function Hero() {
       </div>
 
       {/* ── Bottom hint ── */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
@@ -367,7 +371,7 @@ export default function Hero() {
           animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}
           style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}
         >→</motion.span>
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 }

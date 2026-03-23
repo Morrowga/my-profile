@@ -51,7 +51,7 @@ export default function CafeAI() {
   };
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '0 2rem' }}>
+    <div className='cafeai-section' style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '0 2rem' }}>
 
       {/* ── Header ──────────────────────────────────────────────────── */}
       <motion.div
@@ -63,6 +63,7 @@ export default function CafeAI() {
           fontFamily: 'Space Mono, monospace', fontSize: '0.6rem',
           letterSpacing: '0.25em', color: 'var(--accent)',
           textTransform: 'uppercase', marginBottom: '0.4rem',
+        // eslint-disable-next-line react/jsx-no-comment-textnodes
         }}>
           // AI Project
         </p>

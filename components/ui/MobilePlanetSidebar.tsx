@@ -95,7 +95,9 @@ export default function MobilePlanetSidebar() {
               position: 'fixed', top: 0, right: 0, bottom: 0,
               width: '72vw', maxWidth: 280,
               zIndex: 102,
-              background: 'rgba(5,5,8,0.97)',
+              background: 'rgba(5,5,8,0.4)',   // ← more transparent
+              backdropFilter: 'blur(24px)',     // ← frosted glass blur
+              WebkitBackdropFilter: 'blur(24px)', // ← Safari support
               borderLeft: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', flexDirection: 'column',
               padding: '2rem 1.5rem',
