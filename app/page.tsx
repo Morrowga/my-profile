@@ -15,6 +15,7 @@ import Projects              from '@/components/sections/Projects';
 import Certificates          from '@/components/sections/Certificates';
 import Contact               from '@/components/sections/Contact';
 import CafeAI                from '@/components/sections/CafeAI';
+import { useEffect, useRef } from 'react';
 
 const SECTION_CONTENT: Record<SectionId, React.ComponentType> = {
   hero: Hero, about: About, skills: Skills, projects: Projects,
@@ -24,9 +25,17 @@ const SECTION_CONTENT: Record<SectionId, React.ComponentType> = {
 
 export default function Home() {
   const { activeSection } = useAppSelector(s => s.navigation);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [activeSection]);
 
   const isHero  = activeSection === 'hero';
   const Content = SECTION_CONTENT[activeSection];
+
 
   return (
     <div style={{
@@ -40,6 +49,7 @@ export default function Home() {
       <div style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', display: 'flex' }}>
         <AnimatePresence mode="wait">
           <motion.div
+            ref={scrollRef}
             key={activeSection}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.45, delay: 0.2 } }}
@@ -47,6 +57,7 @@ export default function Home() {
             style={{
               flex: 1, height: '100%', position: 'relative',
               overflow: isHero ? 'hidden' : 'auto',
+              overscrollBehavior: 'none',
             }}
           >
             {isHero ? (
