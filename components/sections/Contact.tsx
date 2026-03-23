@@ -170,7 +170,7 @@ export default function Contact() {
                   onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
                   onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--muted)')}
                 >
-                  {link.label} ↗
+                  {link.label} 
                 </a>
               ))}
             </div>
