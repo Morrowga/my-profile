@@ -5,8 +5,22 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { Images, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
 const PROJECTS = [
-  {
+   {
     id: 1,
+    title: 'Immortal AI',
+    subtitle: 'Training your memories to personal ai bot before you die',
+    description: 'Training Memories, Setting up pronouns and voice, Installing External Knowledge to your actual memories and people can chat with your ai agent.',
+    tags: ['Next.js','Zustand', 'Claude API', 'PostgreSQL', 'Python', 'FastApi','Shadcn','API Development', 'API Integrations'],
+    accent: 'var(--accent)',
+    status: 'Production Beta',
+    year: '2026',
+    github: { disabled: false, repo: 'Morrowga' },
+    website: { show: true, url: 'https://immtl.com', name: 'Immortal ai' },
+    imageCount: 4,
+    imageDir: '6',
+  },
+  {
+    id: 2,
     title: 'Intellect',
     subtitle: 'Supply Chain Report Intelligence',
     description: 'External API integrations such as weather forecasts, fuel prices, port status, tariff alerts, disruption alerts, and trade flow data — with weekly corridor reports sent to clients, including AI-generated analysis and recommendations powered by the Claude API based on aggregated statistics.',
@@ -20,7 +34,7 @@ const PROJECTS = [
     imageDir: '1',
   },
   {
-    id: 2,
+    id: 3,
     title: 'GlamAI',
     subtitle: 'Beauty Assistant',
     description: "Users can upload a photo to virtually try on cosmetics from any brand worldwide — covering lips, eyes, and cheeks — with support for layering multiple products simultaneously. The app scans skin tone and color season, and can generate complete look recommendations for any occasion based on the user's existing cosmetics. All results are exported as images.",
@@ -34,7 +48,7 @@ const PROJECTS = [
     imageDir: '2',
   },
   {
-    id: 3,
+    id: 4,
     title: 'Bloom',
     subtitle: 'Treatment Reservation System',
     description: "Custom mail system for customer communication, real-time background services for mail, chat, and admin panel data, plus API integrations with the client's core system. Includes mobile application API development enabling users to purchase tickets from the core system and book reservation appointments within the app.",
@@ -48,7 +62,7 @@ const PROJECTS = [
     imageDir: '3',
   },
   {
-    id: 4,
+    id: 5,
     title: 'Nakayama',
     subtitle: 'RealEstate Management System',
     description: "API integration with the client's core system to retrieve owner properties and property statistics, and to create company-owned listings directly. Includes aggregated analytics per property and overall — covering expenses, income, tax returns, vacancy rates, occupancy rates, and monthly unit records — plus real-time chat, OpenAI integration for PDF data extraction, language switching, and auto-fill functionality. Also includes mobile application API development.",
@@ -62,7 +76,7 @@ const PROJECTS = [
     imageDir: '4',
   },
   {
-    id: 5,
+    id: 6,
     title: 'Lead Capture Automation',
     subtitle: 'Capturing Lead Data',
     description: "Captures lead data from webhooks with duplicate email detection and automated scoring. Stores results in Google Sheets and sends alerts to Discord or Slack, with error handling via email notifications. Also includes CRM integration with HubSpot.",
@@ -76,7 +90,7 @@ const PROJECTS = [
     imageDir: '5',
   },
   {
-    id: 6,
+    id: 7,
     title: 'Past Experience',
     subtitle: 'Prior Professional Projects',
     description: '',
