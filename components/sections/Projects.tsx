@@ -71,7 +71,7 @@ const PROJECTS = [
     status: 'Deployment in Progress',
     year: '2025',
     github: { disabled: true, repo: 'voyager/nakayama-web' },
-    website: { show: true, url: 'https://https://nakayama.vbiz.jp/login', name: 'Nakayama' },
+    website: { show: true, url: 'https://nakayama.vbiz.jp/login', name: 'Nakayama' },
     imageCount: 6,
     imageDir: '4',
   },
