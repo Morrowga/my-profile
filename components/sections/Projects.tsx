@@ -645,12 +645,14 @@ export default function Projects() {
                       {project.website?.show && (
                         <WebsiteButton url={project.website.url} name={project.website.name} />
                       )}
-                      <GalleryIconButton
-                        onClick={() => setGallery({
-                          images: buildImages(project.imageDir, project.imageCount),
-                          title: project.title,
-                        })}
-                      />
+                      {project.imageCount > 0 && (
+                        <GalleryIconButton
+                          onClick={() => setGallery({
+                            images: buildImages(project.imageDir, project.imageCount),
+                            title: project.title,
+                          })}
+                        />
+                      )}
                     </div>
                   </div>
                 )}
