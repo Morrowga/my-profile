@@ -5,6 +5,20 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { Images, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
 const PROJECTS = [
+    {
+      id: 9,
+      title: 'Restaurant Board Scrapping Service',
+      subtitle: 'Scrapping data from Restaurant Board Website using playwright.',
+      description: 'Data Scrapping with playwright for customers, reservations, keywords, reservation routes, courses, table positions',
+      tags: ['NodeJS','Typescript', 'Playwright'],
+      accent: 'var(--accent)',
+      status: 'Production',
+      year: '2026',
+      github: { disabled: false, repo: 'Morrowga' },
+      website: { show: false, url: 'https://immtl.com', name: 'Immortal ai' },
+      imageCount: 0,
+      imageDir: '6',
+   },
    {
     id: 1,
     title: 'Immortal AI',
