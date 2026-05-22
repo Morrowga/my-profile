@@ -7,9 +7,9 @@ import { Images, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react
 const PROJECTS = [
     {
       id: 9,
-      title: 'Restaurant Board Scrapping Service',
-      subtitle: 'Scrapping data from Restaurant Board Website using playwright.',
-      description: 'Data Scrapping with playwright for customers, reservations, keywords, reservation routes, courses, table positions',
+      title: 'Restaurant Board Scraping Service',
+      subtitle: 'Scraping data from Restaurant Board Website using playwright.',
+      description: 'Data Scraping with playwright for customers, reservations, keywords, reservation routes, courses, table positions',
       tags: ['NodeJS','Typescript', 'Playwright'],
       accent: 'var(--accent)',
       status: 'Production',
