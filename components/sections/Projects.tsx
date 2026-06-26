@@ -6,6 +6,19 @@ import { Images, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react
 
 const PROJECTS = [
     {
+      id: 10,
+      title: 'ITK – Integration Toolkit',
+      subtitle: 'VS Code extension for project integration & intelligence',
+      description: 'A VS Code extension featuring a dashboard panel with real-time flow visualization, built-in terminal commands for scaffolding and deployment, deep code analysis with dependency mapping and issue detection, and automated weekly project update reports delivered directly in the editor.',
+      tags: ['TypeScript', 'VS Code Extension API', 'Node.js', 'Webview API', 'AST Analysis', 'Shell'],
+      status: 'Development',
+      year: '2026',
+      github: { disabled: false, repo: 'Morrowga' },
+      website: { show: true, url: 'https://itk-extension.vercel.app', name: 'ITK' },
+      imageCount: 5,
+      imageDir: '10',
+    },
+    {
       id: 9,
       title: 'Restaurant Board Scraping Service',
       subtitle: 'Scraping data from Restaurant Board Website using playwright.',
@@ -15,9 +28,9 @@ const PROJECTS = [
       status: 'Production',
       year: '2026',
       github: { disabled: false, repo: 'Morrowga' },
-      website: { show: false, url: 'https://immtl.com', name: 'Immortal ai' },
-      imageCount: 0,
-      imageDir: '6',
+      website: { show: true, url: 'https://chitaka.bizbird.net/login', name: 'RestaurantBoard' },
+      imageCount: 4,
+      imageDir: '9',
    },
    {
     id: 1,
