@@ -345,7 +345,7 @@ export default function Hero() {
                   alignItems: 'center',   // ← add
                   gap: '0.3rem',          // ← spacing between icon and text
                 }}>
-                  <ZodiacTaurus style={{ color: 'var(--accent)' }} />
+                  {/* <ZodiacTaurus style={{ color: 'var(--accent)' }} /> */}
                   {p.label}
                 </span>
               </motion.div>
