@@ -3,19 +3,19 @@ import './globals.css';
 import ReduxProvider from '@/components/ReduxProvider';
 
 export const metadata: Metadata = {
-  title: 'THIHA AUNG — AI Engineer',
-  description: 'AI Engineer & Vibe Coder — building intelligent systems with style',
+  title: 'THIHA AUNG — Full-Stack Engineer',
+  description: 'Full-Stack Engineer — building intelligent systems with style',
   openGraph: {
-    title: 'THIHA AUNG — AI Engineer',
-    description: 'AI Engineer & Vibe Coder — building intelligent systems with style',
+    title: 'THIHA AUNG — Full-Stack Engineer',
+    description: 'Full-Stack Engineer — building intelligent systems with style',
     url: 'https://thihaeung.com',
     siteName: 'Thiha Aung Portfolio',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'THIHA AUNG — AI Engineer',
-    description: 'AI Engineer & Vibe Coder — building intelligent systems with style',
+    title: 'THIHA AUNG — Full-Stack Engineer',
+    description: 'Full-Stack Engineer — building intelligent systems with style',
     images: ['https://thihaeung.com/preview/preview.png'],
   },
 };
