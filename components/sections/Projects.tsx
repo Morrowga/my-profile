@@ -11,6 +11,7 @@ const PROJECTS = [
       subtitle: 'VS Code extension for project integration & intelligence',
       description: 'A VS Code extension featuring a dashboard panel with real-time flow visualization, built-in terminal commands for scaffolding and deployment, deep code analysis with dependency mapping and issue detection, and automated weekly project update reports delivered directly in the editor.',
       tags: ['TypeScript', 'VS Code Extension API', 'Node.js', 'Webview API', 'AST Analysis', 'Shell'],
+      accent: 'var(--accent)',
       status: 'Production',
       year: '2026',
       github: { disabled: false, repo: 'Morrowga' },
