@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from 'react';
 
 const TERMINAL_LINES = [
   { prefix: '>', text: 'whoami', delay: 0, color: 'var(--accent)' },
-  { prefix: '', text: 'THIHA AUNG — AI Engineer & Vibe Coder', delay: 600, color: 'var(--text)' },
+  { prefix: '', text: 'THIHA AUNG — Full-Stack Engineer', delay: 600, color: 'var(--text)' },
   { prefix: '>', text: 'cat career.md', delay: 1400, color: 'var(--accent)' },
   { prefix: '', text: 'Full-stack dev switching lanes into AI engineering.', delay: 2000, color: 'var(--muted)' },
   { prefix: '', text: 'Building intelligent products with Python, Next.js & Claude API.', delay: 2400, color: 'var(--muted)' },
