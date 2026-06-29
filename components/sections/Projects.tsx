@@ -9,7 +9,7 @@ const PROJECTS = [
       id: 11,
       title: 'Your Scholar',
       subtitle: 'Scholar oppurtunities for Myanmar people',
-      description: '',
+      description: 'Built a scholarship discovery platform for Myanmar students featuring AI-powered application guidance in Burmese. Users can filter opportunities across 11+ countries by study level and track deadlines, all with no sign-up required.',
       tags: ['TypeScript', 'Nextjs'],
       accent: 'var(--accent)',
       status: 'Production',
