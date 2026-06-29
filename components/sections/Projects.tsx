@@ -6,6 +6,20 @@ import { Images, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react
 
 const PROJECTS = [
     {
+      id: 11,
+      title: 'Your Scholar',
+      subtitle: 'Scholar oppurtunities for Myanmar people',
+      description: '',
+      tags: ['TypeScript', 'Nextjs'],
+      accent: 'var(--accent)',
+      status: 'Production',
+      year: '2026',
+      github: { disabled: false, repo: 'Morrowga' },
+      website: { show: true, url: 'https://yourscholar.thihaeung.com/', name: 'Your Scholar' },
+      imageCount: 2,
+      imageDir: '11',
+    },
+    {
       id: 10,
       title: 'ITK – Integration Toolkit',
       subtitle: 'VS Code extension for project integration & intelligence',
