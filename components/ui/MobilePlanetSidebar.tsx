@@ -23,7 +23,7 @@ export default function MobilePlanetSidebar() {
   const { activeSection } = useAppSelector(s => s.navigation);
 
   const navigate = async (id: string) => {
-    if (id.startsWith('raw')) return;
+    if (id.startsWith('raw') || id === 'cafeai') return;  
     setOpen(false);
     dispatch(startTransition(id));
     await new Promise(r => setTimeout(r, 1350));
@@ -128,6 +128,7 @@ export default function MobilePlanetSidebar() {
               {NAV_PLANETS.map((p, i) => {
                 const isActive = activeSection === p.id;
                 const isRaw    = p.id.startsWith('raw');
+                const isDisabled = isRaw || p.id === 'cafeai'; 
                 const d        = p.size * 2 + 4;
 
                 return (
@@ -141,7 +142,7 @@ export default function MobilePlanetSidebar() {
                       display: 'flex', alignItems: 'center', gap: '1rem',
                       padding: '0.6rem 0.75rem',
                       borderRadius: 8,
-                      cursor: isRaw ? 'default' : 'pointer',
+                      cursor: isDisabled ? 'default' : 'pointer',
                       background: isActive ? 'rgba(255,255,255,0.05)' : 'transparent',
                       border: isActive ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
                       transition: 'background 0.2s',
@@ -166,18 +167,18 @@ export default function MobilePlanetSidebar() {
                         fill={`url(#mob-g-${p.id})`}
                         stroke={isActive ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.08)'}
                         strokeWidth={isActive ? 1.4 : 0.6}
-                        opacity={isRaw ? 0.3 : 1}
+                        opacity={isDisabled ? 0.3 : 1}
                       />
                     </svg>
 
                     {/* Label */}
                     <span style={{
                       fontFamily: 'Syne, sans-serif', fontWeight: 700,
-                      fontSize: isRaw ? '0.7rem' : '0.85rem',
-                      color: isRaw ? 'rgba(255,255,255,0.2)'
-                           : isActive ? '#fff' : 'rgba(255,255,255,0.55)',
+                      fontSize: isDisabled ? '0.7rem' : '0.85rem',   {/* <-- was isRaw */}
+                      color: isDisabled ? 'rgba(255,255,255,0.2)'    {/* <-- was isRaw */}
+                          : isActive ? '#fff' : 'rgba(255,255,255,0.55)',
                       letterSpacing: '0.1em', textTransform: 'uppercase',
-                      fontStyle: isRaw ? 'italic' : 'normal',
+                      fontStyle: isDisabled ? 'italic' : 'normal',   {/* <-- was isRaw */}
                     }}>
                       {p.label}
                     </span>

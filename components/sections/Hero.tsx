@@ -100,10 +100,11 @@ export default function Hero() {
     const r      = p.size * scale;
     const isHov  = hovered === pos.id;
     const isRaw  = pos.id.startsWith('raw');
+    const isDisabled = isRaw || pos.id === 'cafeai'; // <-- add this line
 
     return (
       <g key={pos.id} opacity={behind ? 0.45 : 1}>
-        {isHov && !isRaw && (
+        {isHov && !isDisabled && (   // <-- was !isRaw
           <circle cx={pos.x} cy={pos.y} r={r + 14}
             fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
         )}
@@ -115,18 +116,18 @@ export default function Hero() {
         )}
         <circle cx={pos.x} cy={pos.y} r={r}
           fill={`url(#g-${p.id})`}
-          stroke={isHov && !isRaw ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.12)'}
-          strokeWidth={isHov && !isRaw ? 1.6 : 0.8}
-          style={{ cursor: isRaw ? 'default' : 'pointer' }}
+          stroke={isHov && !isDisabled ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.12)'}
+          strokeWidth={isHov && !isDisabled ? 1.6 : 0.8}
+          style={{ cursor: isDisabled ? 'default' : 'pointer' }}   // <-- was isRaw
           onMouseEnter={() => setHovered(pos.id)}
           onMouseLeave={() => setHovered(null)}
-          onClick={() => !isRaw && navigate(p.id as SectionId)}
+          onClick={() => !isDisabled && navigate(p.id as SectionId)}  // <-- was !isRaw
         />
         <text x={pos.x} y={pos.y + r + 15} textAnchor="middle"
-          fill={isRaw ? 'rgba(255,255,255,0.18)' : isHov ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)'}
-          fontSize={isHov && !isRaw ? '11' : '9'}
+          fill={isDisabled ? 'rgba(255,255,255,0.18)' : isHov ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)'}
+          fontSize={isHov && !isDisabled ? '11' : '9'}
           fontFamily="Syne, sans-serif" fontWeight="700" letterSpacing="2"
-          fontStyle={isRaw ? 'italic' : 'normal'}
+          fontStyle={isDisabled ? 'italic' : 'normal'}   // <-- was isRaw
           style={{ pointerEvents: 'none', textTransform: 'uppercase' }}
         >{p.label}</text>
       </g>
@@ -320,7 +321,7 @@ export default function Hero() {
 
         {/* Tooltip */}
         <AnimatePresence>
-          {hovered && !hovered.startsWith('raw') && (() => {
+          {hovered && !hovered.startsWith('raw') && hovered !== 'cafeai' && (() => {
             const pos = positions.find(p => p.id === hovered);
             const p   = ALL_PLANETS.find(pp => pp.id === hovered);
             if (!pos || !p) return null;
