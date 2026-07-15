@@ -12,9 +12,6 @@ const NAV_PLANETS = [
   { id: 'certificates', label: 'Certs',        size: 15, color: '#81654f', ring: false },
   { id: 'contact',      label: 'Contact',      size: 14, color: '#df7b1a', ring: false },
   { id: 'cafeai',       label: 'CaféAI',       size: 13, color: '#c26b59', ring: false },
-  // { id: 'raw1',         label: 'Raw',          size: 13, color: '#555555', ring: false },
-  // { id: 'raw2',         label: 'Raw',          size: 11, color: '#444444', ring: false },
-  // { id: 'raw3',         label: 'Raw',          size: 14, color: '#4a4a4a', ring: true  },
 ];
 
 export default function MobilePlanetSidebar() {
@@ -23,7 +20,7 @@ export default function MobilePlanetSidebar() {
   const { activeSection } = useAppSelector(s => s.navigation);
 
   const navigate = async (id: string) => {
-    if (id.startsWith('raw') || id === 'cafeai') return;  
+    if (id.startsWith('raw') || id === 'cafeai') return;
     setOpen(false);
     dispatch(startTransition(id));
     await new Promise(r => setTimeout(r, 1350));
@@ -49,7 +46,6 @@ export default function MobilePlanetSidebar() {
         }}
         className="mobile-fab"
       >
-        {/* Eye icon */}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="5" fill="rgba(255,255,255,0.7)"/>
           <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none"/>
@@ -95,40 +91,19 @@ export default function MobilePlanetSidebar() {
               position: 'fixed', top: 0, right: 0, bottom: 0,
               width: '72vw', maxWidth: 280,
               zIndex: 102,
-              background: 'rgba(5,5,8,0.4)',   // ← more transparent
-              backdropFilter: 'blur(24px)',     // ← frosted glass blur
-              WebkitBackdropFilter: 'blur(24px)', // ← Safari support
+              background: 'rgba(5,5,8,0.4)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
               borderLeft: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', flexDirection: 'column',
               padding: '2rem 1.5rem',
             }}
           >
-            {/* Header */}
-            {/* <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-              <p style={{
-                fontFamily: 'Space Mono, monospace', fontSize: '0.65rem',
-                color: 'rgba(255,255,255,0.3)', letterSpacing: '0.25em', textTransform: 'uppercase',
-              }}>
-                Navigate
-              </p>
-              <button
-                onClick={() => setOpen(false)}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  color: 'rgba(255,255,255,0.4)', fontSize: '1.2rem', lineHeight: 1,
-                  padding: '0.25rem',
-                }}
-              >
-                ×
-              </button>
-            </div> */}
-
-            {/* Planet list */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {NAV_PLANETS.map((p, i) => {
                 const isActive = activeSection === p.id;
                 const isRaw    = p.id.startsWith('raw');
-                const isDisabled = isRaw || p.id === 'cafeai'; 
+                const isDisabled = isRaw || p.id === 'cafeai';
                 const d        = p.size * 2 + 4;
 
                 return (
@@ -148,7 +123,6 @@ export default function MobilePlanetSidebar() {
                       transition: 'background 0.2s',
                     }}
                   >
-                    {/* Planet SVG */}
                     <svg width={d} height={d} style={{ overflow: 'visible', flexShrink: 0 }}>
                       <defs>
                         <radialGradient id={`mob-g-${p.id}`} cx="35%" cy="30%" r="65%">
@@ -171,14 +145,13 @@ export default function MobilePlanetSidebar() {
                       />
                     </svg>
 
-                    {/* Label */}
                     <span style={{
                       fontFamily: 'Syne, sans-serif', fontWeight: 700,
-                      fontSize: isDisabled ? '0.7rem' : '0.85rem',   {/* <-- was isRaw */}
-                      color: isDisabled ? 'rgba(255,255,255,0.2)'    {/* <-- was isRaw */}
-                          : isActive ? '#fff' : 'rgba(255,255,255,0.55)',
+                      fontSize: isDisabled ? '0.7rem' : '0.85rem',
+                      color: isDisabled ? 'rgba(255,255,255,0.2)'
+                           : isActive ? '#fff' : 'rgba(255,255,255,0.55)',
                       letterSpacing: '0.1em', textTransform: 'uppercase',
-                      fontStyle: isDisabled ? 'italic' : 'normal',   {/* <-- was isRaw */}
+                      fontStyle: isDisabled ? 'italic' : 'normal',
                     }}>
                       {p.label}
                     </span>
