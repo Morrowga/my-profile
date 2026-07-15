@@ -4,6 +4,8 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setText, toggleTag, brewRecipe } from '@/store/slices/cafeAiSlice';
 import { getRemainingBrews, getResetDate } from '@/utils/rateLimit';
 
+const TEMP_DISABLED = true; // <-- flip to false to bring CaféAI back online
+
 const MOOD_TAGS = [
   'tired', 'energetic', 'stressed', 'relaxed',
   'happy', 'romantic', 'focused', 'adventurous', 'cozy', 'anxious',
@@ -49,6 +51,34 @@ export default function CafeAI() {
     if (!canBrew || loading) return;
     dispatch(brewRecipe({ text, tags }));
   };
+
+  if (TEMP_DISABLED) {
+    return (
+      <div style={{
+        height: '100%', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        padding: '0 2rem', textAlign: 'center', gap: 14,
+      }}>
+        <span style={{ fontSize: 40, opacity: 0.15 }}>☕</span>
+        <h1 style={{
+          fontFamily: 'Syne, sans-serif', fontWeight: 800,
+          fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', color: '#fff',
+        }}>
+          CaféAI
+        </h1>
+        <p style={{
+          fontFamily: 'Space Mono, monospace', fontSize: '0.7rem',
+          letterSpacing: '0.12em', color: 'rgba(255,255,255,0.35)',
+          textTransform: 'uppercase',
+        }}>
+          Temporarily unavailable
+        </p>
+        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', maxWidth: 340, lineHeight: 1.6 }}>
+          This project is offline for maintenance right now. Check back soon.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className='cafeai-section' style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '0 2rem' }}>
@@ -158,21 +188,6 @@ export default function CafeAI() {
               })}
             </div>
           </div>
-
-          {/* Stack pills */}
-          {/* <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            {['FastAPI', 'LangChain', 'HuggingFace', 'GPT-4o-mini'].map(s => (
-              <span key={s} style={{
-                padding: '2px 9px', borderRadius: 999,
-                border: '1px solid rgba(255,255,255,0.07)',
-                fontFamily: 'Space Mono, monospace',
-                fontSize: '0.55rem', letterSpacing: '0.06em',
-                color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase',
-              }}>
-                {s}
-              </span>
-            ))}
-          </div> */}
 
           {/* Brew button */}
           <motion.button
