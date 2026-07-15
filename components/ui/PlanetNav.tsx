@@ -11,9 +11,6 @@ const NAV_PLANETS = [
   { id: 'certificates', label: 'Certs',        size: 15, color: '#81654f', ring: false },
   { id: 'contact',      label: 'Contact',      size: 14, color: '#df7b1a', ring: false },
   { id: 'cafeai',       label: 'CaféAI',       size: 13, color: '#c26b59', ring: false },
-  // { id: 'raw1',         label: 'Raw',          size: 12, color: '#555555', ring: false },
-  // { id: 'raw2',         label: 'Raw',          size: 10, color: '#444444', ring: false },
-  // { id: 'raw3',         label: 'Raw',          size: 13, color: '#4a4a4a', ring: true  },
 ];
 
 export default function PlanetNav() {
@@ -21,7 +18,7 @@ export default function PlanetNav() {
   const { activeSection } = useAppSelector(s => s.navigation);
 
   const navigate = async (id: string) => {
-    if (id.startsWith('raw') || id === 'cafeai') return;
+    if (id.startsWith('raw') || id === 'cafeai') return; // <-- CaféAI blocked here
     dispatch(startTransition(id));
     await new Promise(r => setTimeout(r, 1100));
     dispatch(setActiveSection(id as SectionId));
@@ -40,12 +37,10 @@ export default function PlanetNav() {
         alignItems: 'flex-end', gap: '0.5rem',
       }}
     >
-
-
       {NAV_PLANETS.map((p, i) => {
         const isActive = activeSection === p.id;
         const isRaw    = p.id.startsWith('raw');
-        const isDisabled = isRaw || p.id === 'cafeai';
+        const isDisabled = isRaw || p.id === 'cafeai'; // <-- treated as disabled
         const d        = p.size * 2 + 4;
 
         return (
@@ -80,7 +75,28 @@ export default function PlanetNav() {
             </motion.span>
 
             <svg width={d} height={d} style={{ overflow: 'visible', flexShrink: 0 }}>
-              {/* ...unchanged gradient/circle/ring code... */}
+              <defs>
+                <radialGradient id={`nav-g-${p.id}`} cx="35%" cy="30%" r="65%">
+                  <stop offset="0%"   stopColor="#fff"     stopOpacity={isActive ? 1 : 0.7} />
+                  <stop offset="60%"  stopColor={p.color}  stopOpacity={isActive ? 0.9 : 0.5} />
+                  <stop offset="100%" stopColor="#111"     stopOpacity="0.8" />
+                </radialGradient>
+              </defs>
+
+              {isActive && (
+                <circle cx={d/2} cy={d/2} r={p.size + 8}
+                  fill="rgba(255,255,255,0.05)"
+                  stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+              )}
+
+              {p.ring && (
+                <ellipse cx={d/2} cy={d/2}
+                  rx={p.size * 1.8} ry={p.size * 0.4}
+                  fill="none"
+                  stroke={isActive ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.15)'}
+                  strokeWidth="1.2" />
+              )}
+
               <circle cx={d/2} cy={d/2} r={p.size}
                 fill={`url(#nav-g-${p.id})`}
                 stroke={isActive ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.1)'}
