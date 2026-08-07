@@ -6,6 +6,20 @@ import { Images, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react
 
 const PROJECTS = [
     {
+      id: 12,
+      title: 'ANTS - SAAS Platform',
+      subtitle: 'Providing modules such as Warehouse, HRM, and AI OCR for businesses',
+      description: 'Organizations can manage their operations through a single platform, including warehouse management, human resource management, and AI-powered OCR for document processing. The platform is designed to streamline business processes and improve efficiency.',
+      tags: ['TypeScript', 'React', 'Python', 'FastApi', 'PostgreSQL', 'Shadcn', 'OpenAI'],
+      accent: 'var(--accent)',
+      status: 'Production',
+      year: '2026',
+      github: { disabled: false, repo: 'Morrowga' },
+      website: { show: false, url: 'https://yourscholar.thihaeung.com/', name: 'Your Scholar' },
+      imageCount: 3,
+      imageDir: '12',
+    },
+    {
       id: 11,
       title: 'Your Scholar',
       subtitle: 'Scholar oppurtunities for Myanmar people',
@@ -35,9 +49,9 @@ const PROJECTS = [
     },
     {
       id: 9,
-      title: 'Restaurant Board Scraping Service',
+      title: 'Chitaka Restaurant Management',
       subtitle: 'Scraping data from Restaurant Board Website using playwright.',
-      description: 'Data Scraping with playwright for customers, reservations, keywords, reservation routes, courses, table positions',
+      description: 'Data Scraping with playwright for customers, reservations, keywords, reservation routes, courses, table positions, automatic seating service.',
       tags: ['NodeJS','Typescript', 'Playwright'],
       accent: 'var(--accent)',
       status: 'Production',
