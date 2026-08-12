@@ -155,7 +155,7 @@ export default function Hero() {
           THIHA AUNG
         </p>
         <p style={{ fontFamily: 'Space Mono, monospace', fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-          Full-Stack Engineer
+          Lead Software Engineer
         </p>
       </motion.div>
 

@@ -14,7 +14,7 @@ export default function OGImage() {
       gap: 16,
     }}>
       <p style={{ color: '#4ade80', fontSize: 20, letterSpacing: 8 }}>
-        Full-Stack Engineer
+        Lead Software Engineer
       </p>
       <p style={{ color: '#fff', fontSize: 72, fontWeight: 800, margin: 0 }}>
         THIHA AUNG
