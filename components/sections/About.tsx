@@ -105,11 +105,11 @@ export default function About() {
             </h2>
             <p style={{ color: 'var(--muted)', lineHeight: 1.8, fontSize: '0.95rem', marginBottom: '1.5rem' }}>
               I started as a full-stack developer building real estate platforms and e-commerce systems.
-              Now I&apos;m deep in the AI transition — integrating LLMs into real products,
+              Now I&apos;m deep in the AI transition integrating LLMs into real products,
               designing Human-in-the-Loop workflows, and shipping things that actually work.
             </p>
             <p style={{ color: 'var(--muted)', lineHeight: 1.8, fontSize: '0.95rem', marginBottom: '2.5rem' }}>
-              My edge is bridging the gap between AI capabilities and production realities —
+              My edge is bridging the gap between AI capabilities and production realities
               I don&apos;t just prototype, I architect and ship.
             </p>
 
