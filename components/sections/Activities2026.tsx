@@ -13,27 +13,23 @@ type Testimonial = {
 const TESTIMONIALS: Testimonial[] = [
   {
     id: 't1',
-    name: 'Jane Doe',
-    role: 'Founder, Studio Name',
-    photo: '/images/clients/jane.jpg',
+    name: 'Kan',
+    role: 'Content Creator',
+    photo: '/images/clients/1.webp',
     quote:
       'Working with them was a game changer for our brand — fast, thoughtful, and genuinely invested in the outcome.',
   },
   {
     id: 't2',
-    name: 'John Smith',
-    role: 'Owner, Side Project Co.',
-    photo: '/images/clients/john.jpg',
+    name: 'Toshiyuki Asai',
+    role: 'Founder, Voyager Co,ltd',
+    photo: '/images/clients/2.png',
     quote:
-      'Delivered exactly what we needed, ahead of schedule, with communication that made the whole process painless.',
-  },
-  {
-    id: 't3',
-    name: 'Alex Lee',
-    role: 'Independent Client',
-    photo: '/images/clients/alex.jpg',
-    quote:
-      'Rare mix of technical skill and genuine care about getting the details right. Would work with them again in a heartbeat.',
+        `Beyond his technical competence, Mr. Thiha Aung is a sincere, dedicated, and highly
+        motivated professional. He continuously seeks to expand his knowledge and improve his
+        skills while approaching new challenges with determination and professionalism. His
+        positive attitude and commitment have earned him the trust and respect of everyone
+        within our company.`,
   },
 ];
 
