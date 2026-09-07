@@ -155,7 +155,7 @@ export default function Activities2026() {
                     fontFamily: 'Space Mono, monospace',
                     fontSize: '0.6rem',
                     letterSpacing: '0.05em',
-                    marginTop: 1,
+                    marginTop: 4,
                     color: 'rgba(255,255,255,0.35)',
                     textTransform: 'uppercase',
                   }}
