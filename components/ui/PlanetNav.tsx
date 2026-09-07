@@ -10,7 +10,7 @@ const NAV_PLANETS = [
   { id: 'projects',     label: 'Projects',     size: 20, color: '#fbe6be', ring: true  },
   { id: 'certificates', label: 'Certs',        size: 15, color: '#81654f', ring: false },
   { id: 'contact',      label: 'Contact',      size: 14, color: '#df7b1a', ring: false },
-  { id: 'cafeai',       label: 'CaféAI',       size: 13, color: '#c26b59', ring: false },
+  { id: 'activities2026', label: '2026 Activities', size: 13, color: '#c26b59', ring: false },
 ];
 
 export default function PlanetNav() {
@@ -18,7 +18,7 @@ export default function PlanetNav() {
   const { activeSection } = useAppSelector(s => s.navigation);
 
   const navigate = async (id: string) => {
-    if (id.startsWith('raw') || id === 'cafeai') return; // <-- CaféAI blocked here
+    if (id.startsWith('raw')) return; // cafeai block removed
     dispatch(startTransition(id));
     await new Promise(r => setTimeout(r, 1100));
     dispatch(setActiveSection(id as SectionId));
@@ -40,7 +40,7 @@ export default function PlanetNav() {
       {NAV_PLANETS.map((p, i) => {
         const isActive = activeSection === p.id;
         const isRaw    = p.id.startsWith('raw');
-        const isDisabled = isRaw || p.id === 'cafeai'; // <-- treated as disabled
+        const isDisabled = isRaw; // <-- treated as disabled
         const d        = p.size * 2 + 4;
 
         return (

@@ -14,7 +14,7 @@ import Skills                from '@/components/sections/Skills';
 import Projects              from '@/components/sections/Projects';
 import Certificates          from '@/components/sections/Certificates';
 import Contact               from '@/components/sections/Contact';
-import CafeAI                from '@/components/sections/CafeAI';
+import CafeAI                from '@/components/sections/Activities2026';
 import { useEffect, useRef } from 'react';
 
 const SECTION_CONTENT: Record<SectionId, React.ComponentType> = {

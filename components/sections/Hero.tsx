@@ -11,7 +11,7 @@ const NAMED = [
   { id: 'projects',     label: 'Projects', rx: 155, ry: 58, size: 22, speed: 0.0024, startAngle: Math.PI * (4/6),  color: '#fbe6be', ring: true  },
   { id: 'certificates', label: 'Certs',    rx: 155, ry: 58, size: 17, speed: 0.0024, startAngle: Math.PI * (6/6),  color: '#81654f', ring: false },
   { id: 'contact',      label: 'Contact',  rx: 155, ry: 58, size: 17, speed: 0.0024, startAngle: Math.PI * (8/6),  color: '#df7b1a', ring: false },
-  { id: 'cafeai',       label: 'CaféAI',   rx: 155, ry: 58, size: 14, speed: 0.0024, startAngle: Math.PI * (10/6), color: '#c26b59', ring: false },
+  { id: 'activities2026', label: '2026 Activities', rx: 155, ry: 58, size: 14, speed: 0.0024, startAngle: Math.PI * (10/6), color: '#c26b59', ring: false },
 ];
 
 const RAW = Array.from({ length: 2 }, (_, i) => ({
@@ -100,7 +100,7 @@ export default function Hero() {
     const r      = p.size * scale;
     const isHov  = hovered === pos.id;
     const isRaw  = pos.id.startsWith('raw');
-    const isDisabled = isRaw || pos.id === 'cafeai'; // <-- add this line
+    const isDisabled = isRaw;  // <-- add this line
 
     return (
       <g key={pos.id} opacity={behind ? 0.45 : 1}>
@@ -321,7 +321,7 @@ export default function Hero() {
 
         {/* Tooltip */}
         <AnimatePresence>
-          {hovered && !hovered.startsWith('raw') && hovered !== 'cafeai' && (() => {
+          {hovered && !hovered.startsWith('raw') && (() => {
             const pos = positions.find(p => p.id === hovered);
             const p   = ALL_PLANETS.find(pp => pp.id === hovered);
             if (!pos || !p) return null;
