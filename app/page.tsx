@@ -14,13 +14,12 @@ import Skills                from '@/components/sections/Skills';
 import Projects              from '@/components/sections/Projects';
 import Certificates          from '@/components/sections/Certificates';
 import Contact               from '@/components/sections/Contact';
-import CafeAI                from '@/components/sections/Activities2026';
+import Activities2026        from '@/components/sections/Activities2026';
 import { useEffect, useRef } from 'react';
 
 const SECTION_CONTENT: Record<SectionId, React.ComponentType> = {
   hero: Hero, about: About, skills: Skills, projects: Projects,
-  certificates: Certificates, contact: Contact,cafeai: CafeAI,
-
+  certificates: Certificates, contact: Contact, activities2026: Activities2026,
 };
 
 export default function Home() {
@@ -36,12 +35,10 @@ export default function Home() {
   const isHero  = activeSection === 'hero';
   const Content = SECTION_CONTENT[activeSection];
 
-
   return (
     <div style={{
       width: '100vw', height: '100vh',
       overflow: 'hidden', position: 'relative', background: '#000',
-      // paddingBottom: 20
     }}>
       <Cursor />
       <StarField />

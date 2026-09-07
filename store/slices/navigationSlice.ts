@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type SectionId = 'hero' | 'about' | 'skills' | 'projects' | 'certificates' | 'contact' | 'cafeai';
+export type SectionId = 'hero' | 'about' | 'skills' | 'projects' | 'certificates' | 'contact' | 'activities2026';
 
 interface NavigationState {
   activeSection: SectionId;
