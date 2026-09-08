@@ -127,7 +127,7 @@ const PROJECTS = [
     status: 'Production',
     year: '2025',
     github: { disabled: false, repo: 'Morrowga' },
-    website: { show: true, url: 'https://bloom-app.net', name: 'Bloom' },
+    website: { show: false, url: 'https://bloom-app.net', name: 'Bloom' },
     imageCount: 5,
     imageDir: '3',
   },
