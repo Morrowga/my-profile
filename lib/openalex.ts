@@ -8,7 +8,6 @@
 const BASE = 'https://api.openalex.org/works';
 const FIELDS = 'id,title,publication_year,type,open_access,cited_by_count,primary_location';
 
-export const TYPES = ['article', 'review', 'book-chapter', 'preprint', 'dataset', 'book', 'dissertation', 'letter', 'editorial', 'report'] as const;
 export const FACET_FIELDS = ['type', 'open_access.is_oa', 'authorships.countries', 'publication_year'] as const;
 export type FacetField = (typeof FACET_FIELDS)[number];
 
@@ -35,7 +34,9 @@ function int(v: string | null, min: number, max: number, name: string): number |
 
 export function readFilters(p: URLSearchParams): Filters {
   const types = (p.get('types') ?? '').split(',').map(s => s.trim()).filter(Boolean);
-  for (const t of types) if (!(TYPES as readonly string[]).includes(t)) throw new ApiError(400, `unknown type "${t}"`);
+  // Any type OpenAlex itself lists is allowed (the facet list offers conference-abstract, paratext, ... too); only the shape is checked,
+  // because the value goes into the filter text and must not carry `,` `|` or `:`.
+  for (const t of types) if (!/^[a-z0-9-]{1,40}$/.test(t)) throw new ApiError(400, `invalid type "${t}"`);
 
   const country = p.get('country')?.trim().toUpperCase();
   if (country && !/^[A-Z]{2}$/.test(country)) throw new ApiError(400, 'country must be a 2-letter code');

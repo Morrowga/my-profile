@@ -722,7 +722,7 @@ export default function Projects() {
                     ))}
                   </ul>
                 ) : (
-                  <p style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, fontSize: '0.9rem', marginBottom: '1.5rem', flex: 1 }}>
+                  <p className="mono" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, fontSize: '0.9rem', marginBottom: '1.5rem', flex: 1 }}>
                     {project.description}
                   </p>
                 )}
