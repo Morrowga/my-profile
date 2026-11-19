@@ -9,6 +9,8 @@ interface NavigationState {
   menuIndex: number;
   isTransitioning: boolean;
   zoomTarget: string | null;
+  /** The About page can show the person ('about') or their GitHub profile ('github'); the button beside Back switches it */
+  aboutView: 'about' | 'github';
 }
 
 const initialState: NavigationState = {
@@ -16,6 +18,7 @@ const initialState: NavigationState = {
   menuIndex: 0,
   isTransitioning: false,
   zoomTarget: null,
+  aboutView: 'about',
 };
 
 const navigationSlice = createSlice({
@@ -24,8 +27,12 @@ const navigationSlice = createSlice({
   reducers: {
     setActiveSection(state, action: PayloadAction<SectionId>) {
       state.activeSection = action.payload;
+      state.aboutView = 'about';      // coming back to About always starts with About, not GitHub
       const i = MENU.findIndex(m => m.id === action.payload);
       if (i > 0) state.menuIndex = i; // Home keeps the last focused item
+    },
+    setAboutView(state, action: PayloadAction<'about' | 'github'>) {
+      state.aboutView = action.payload;
     },
     setMenuIndex(state, action: PayloadAction<number>) {
       state.menuIndex = Math.max(0, Math.min(MENU.length - 1, action.payload));
@@ -41,5 +48,5 @@ const navigationSlice = createSlice({
   },
 });
 
-export const { setActiveSection, setMenuIndex, startTransition, endTransition } = navigationSlice.actions;
+export const { setActiveSection, setAboutView, setMenuIndex, startTransition, endTransition } = navigationSlice.actions;
 export default navigationSlice.reducer;

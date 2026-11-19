@@ -1,6 +1,9 @@
 import { ImageResponse } from 'next/og';
+import { SITE_HOST } from '@/lib/site';
 
-export const runtime = 'edge';
+// No `runtime = 'edge'` here: without it the picture is made once when the site is built and then served from the cache,
+// which is faster and safer for the crawlers of WhatsApp, LinkedIn and the others (they give up quickly).
+export const alt = 'THIHA AUNG — Software Engineer';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -20,7 +23,7 @@ export default function OGImage() {
         THIHA AUNG
       </p>
       <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 20 }}>
-        thihaeung.com
+        {SITE_HOST}
       </p>
     </div>
   );

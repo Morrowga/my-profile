@@ -310,7 +310,7 @@ export default function TrafficShowcase() {
             ]}
           />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 300px', minWidth: 260 }}>
+        <div className="lab-play" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 300px', minWidth: 260 }}>
           <button type="button" style={roundBtn} onClick={() => go(step - 1)} aria-label="Previous step"><SkipBack size={15} /></button>
           <button
             type="button"

@@ -2,7 +2,9 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { FROST } from '@/lib/styles';
+import { useAppSelector } from '@/store/hooks';
 import Skills from './Skills';
+import GitHubView from './about/github/GitHubView';
 
 const STATS = [
   { value: '6+', label: 'Years shipping\nproduction code' },
@@ -11,7 +13,8 @@ const STATS = [
   { value: '∞', label: 'Coffee consumed\nwhile coding' },
 ];
 
-export default function About() {
+/** The About page proper: the person, the numbers and the skills. */
+function AboutMe() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-100px' });
 
@@ -122,4 +125,10 @@ export default function About() {
       `}</style>
     </section>
   );
+}
+
+/** The button beside Back swaps this page between About and my GitHub profile (the page's content is replaced, not covered). */
+export default function About() {
+  const view = useAppSelector(s => s.navigation.aboutView);
+  return view === 'github' ? <GitHubView /> : <AboutMe />;
 }

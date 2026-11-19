@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ExternalLink, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { ExternalLink, RotateCcw, SlidersHorizontal, X } from 'lucide-react';
 import { FROST } from '@/lib/styles';
 
 /**
@@ -82,11 +82,13 @@ export default function SearchShowcase() {
   const [error, setError] = useState<string | null>(null);
   const [moreError, setMoreError] = useState<string | null>(null);
   const [facets, setFacets] = useState<Partial<Record<FacetField, Group[]>>>({});
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);          // phones: the full filters, as a sheet from the bottom
+  const [isMobile, setIsMobile] = useState(false);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewH, setViewH] = useState(600);
 
   const scroller = useRef<HTMLDivElement>(null);
+  const closeBtn = useRef<HTMLButtonElement>(null);
   const run = useRef(0);                                       // numbers each search, so a late answer to an old search is ignored
   const ctrl = useRef<AbortController | null>(null);
   const applied = useRef<F>(EMPTY);
@@ -150,6 +152,24 @@ export default function SearchShowcase() {
 
   useEffect(() => () => ctrl.current?.abort(), []);
 
+  // is this a phone-sized screen? (the same width as the CSS: 900px)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 900px)');
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+
+  // the filter sheet: focus moves into it when it opens, and Escape closes it
+  useEffect(() => {
+    if (!sheetOpen) return;
+    closeBtn.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSheetOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [sheetOpen]);
+
   // measure the list box
   useEffect(() => {
     const el = scroller.current;
@@ -174,6 +194,8 @@ export default function SearchShowcase() {
   const toggleType = (k: string) => set({ types: draft.types.includes(k) ? draft.types.filter(x => x !== k) : [...draft.types, k] });
   const activeCount = (draft.types.length ? 1 : 0) + (draft.oa !== 'any' ? 1 : 0) + (draft.minCites ? 1 : 0) + (draft.country ? 1 : 0) + (draft.yearFrom || draft.yearTo ? 1 : 0);
   const hasQuery = draft.q.trim().length > 0;
+  const bestEnabled = hasQuery && draft.mode === 'all';   // "Best match" only makes sense when searching everywhere for words
+  const citedOn = draft.sort === 'cited' || (draft.sort === 'relevance' && !bestEnabled);
   const typeGroups = facets.type ?? [];
   const oaGroups = facets['open_access.is_oa'] ?? [];
   const countryGroups = facets['authorships.countries'] ?? [];
@@ -182,17 +204,41 @@ export default function SearchShowcase() {
   return (
     <div className="lab-stack" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '1rem' }}>
       <div className="search-grid">
-        {/* filters */}
-        <div>
-          <button type="button" className="search-toggle lab-ctl-btn" onClick={() => setFiltersOpen(o => !o)} aria-expanded={filtersOpen}
-            style={{ ...FROST, width: '100%', borderRadius: 12, padding: '0.65rem 1rem', color: '#fff', fontFamily: 'inherit', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', alignItems: 'center', gap: 8 }}>
-            <SlidersHorizontal size={15} /> Filters{activeCount ? ` (${activeCount})` : ''}
-          </button>
+        {/* phones only: the search box and a row of quick filters you can slide sideways */}
+        <div className="search-quick">
+          <input value={draft.q} onChange={e => set({ q: e.target.value })} placeholder="Search papers, e.g. machine learning" aria-label="Search words" type="search" style={inputStyle} />
+          <div className="search-chips lab-hscroll">
+            <button type="button" onClick={() => setSheetOpen(true)} aria-haspopup="dialog" style={{ ...chipStyle(activeCount > 0), display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <SlidersHorizontal size={13} /> Filters{activeCount ? ` (${activeCount})` : ''}
+            </button>
+            <Chip on={citedOn} onClick={() => set({ sort: 'cited' })}>Most cited</Chip>
+            <Chip on={draft.sort === 'new'} onClick={() => set({ sort: 'new' })}>Newest</Chip>
+            <Chip on={draft.oa === 'true'} onClick={() => set({ oa: draft.oa === 'true' ? 'any' : 'true' })}>Open access</Chip>
+          </div>
+        </div>
 
-          <div className="search-filters" data-open={filtersOpen} style={{ ...FROST, borderRadius: 14, padding: '1.1rem', display: 'grid', gap: '1.15rem' }}>
+        {/* filters: the left column on a big screen; on a phone this is the sheet that slides up from the bottom */}
+        <div className="search-side">
+          <div className="sheet-backdrop" data-open={sheetOpen} onClick={() => setSheetOpen(false)} aria-hidden="true" />
+
+          <div
+            className="search-filters" data-open={sheetOpen}
+            role={isMobile ? 'dialog' : undefined} aria-modal={isMobile && sheetOpen ? true : undefined} aria-label="Filters"
+            style={{ ...FROST, borderRadius: 14, padding: '1.1rem', display: 'grid', gap: '1.15rem' }}
+          >
+            <div className="sheet-head">
+              <strong className="lab-title" style={{ fontSize: '1.05rem', fontWeight: 800 }}>Filters</strong>
+              <button
+                ref={closeBtn} type="button" onClick={() => setSheetOpen(false)} aria-label="Close filters"
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, borderRadius: '50%', cursor: 'pointer', color: '#fff', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.16)' }}
+              >
+                <X size={17} />
+              </button>
+            </div>
+
             <div>
               <p className="mono" style={label}>Search words</p>
-              <input value={draft.q} onChange={e => set({ q: e.target.value })} placeholder="e.g. machine learning" aria-label="Search words" style={inputStyle} />
+              <input className="search-words-input" value={draft.q} onChange={e => set({ q: e.target.value })} placeholder="e.g. machine learning" aria-label="Search words" style={inputStyle} />
               <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
                 <Chip on={draft.mode === 'title'} onClick={() => set({ mode: 'title' })}>In the title</Chip>
                 <Chip on={draft.mode === 'all'} onClick={() => set({ mode: 'all' })}>Everywhere</Chip>
@@ -202,8 +248,8 @@ export default function SearchShowcase() {
             <div>
               <p className="mono" style={label}>Sort by</p>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                <Chip on={draft.sort === 'relevance' && hasQuery && draft.mode === 'all'} disabled={!hasQuery || draft.mode !== 'all'} onClick={() => set({ sort: 'relevance' })}>Best match</Chip>
-                <Chip on={draft.sort === 'cited' || (draft.sort === 'relevance' && !(hasQuery && draft.mode === 'all'))} onClick={() => set({ sort: 'cited' })}>Most cited</Chip>
+                <Chip on={draft.sort === 'relevance' && bestEnabled} disabled={!bestEnabled} onClick={() => set({ sort: 'relevance' })}>Best match</Chip>
+                <Chip on={citedOn} onClick={() => set({ sort: 'cited' })}>Most cited</Chip>
                 <Chip on={draft.sort === 'new'} onClick={() => set({ sort: 'new' })}>Newest</Chip>
               </div>
             </div>
@@ -256,6 +302,13 @@ export default function SearchShowcase() {
             <button type="button" onClick={() => setDraft(EMPTY)} style={{ ...chipStyle(false), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '0.5rem 0.9rem' }}>
               <RotateCcw size={13} /> Clear everything
             </button>
+
+            {/* phones only: stays at the bottom of the sheet while the filters scroll */}
+            <div className="sheet-foot">
+              <button type="button" onClick={() => setSheetOpen(false)} style={{ ...chipStyle(true), width: '100%', padding: '0.8rem', fontSize: '0.95rem', fontWeight: 700 }}>
+                Show results
+              </button>
+            </div>
           </div>
         </div>
 

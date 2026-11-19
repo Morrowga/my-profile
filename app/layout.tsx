@@ -1,21 +1,27 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import ReduxProvider from '@/components/ReduxProvider';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
+import { SITE_URL, SITE_NAME, TITLE, DESCRIPTION } from '@/lib/site';
 
+// metadataBase turns the relative addresses below (and the generated preview picture) into full ones for link previews.
+// It is set on purpose: left out, Next.js guesses it from the project's production domain in Vercel.
 export const metadata: Metadata = {
-  title: 'THIHA AUNG — Software Engineer',
-  description: 'Software Engineer — building intelligent systems with style',
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
   openGraph: {
-    title: 'THIHA AUNG — Software Engineer',
-    description: 'Software Engineer — building intelligent systems with style',
-    url: 'https://thihaeung.com',
-    siteName: 'Thiha Aung Portfolio',
+    title: TITLE,
+    description: DESCRIPTION,
+    url: '/',
+    siteName: SITE_NAME,
     type: 'website',
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'THIHA AUNG — Software Engineer',
-    description: 'Software Engineer — building intelligent systems with style',
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 
@@ -32,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ReduxProvider>{children}</ReduxProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );

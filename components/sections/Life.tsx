@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Play } from 'lucide-react';
+import { ArrowUpRight, Play } from 'lucide-react';
 import { FROST } from '@/lib/styles';
 import PillTabs from '@/components/ui/PillTabs';
 
@@ -105,8 +105,8 @@ function FavTrackCard({ track, index }: { track: FavTrack; index: number }) {
           loading="lazy"
         />
       ) : (
-        <a href={track.spotify} target="_blank" rel="noopener noreferrer" style={{ ...card, display: 'block', padding: '1.2rem', color: '#fff' }}>
-          {name} ↗
+        <a href={track.spotify} target="_blank" rel="noopener noreferrer" style={{ ...card, display: 'flex', alignItems: 'center', gap: 6, padding: '1.2rem', color: '#fff' }}>
+          {name}<ArrowUpRight size={15} aria-hidden="true" />
         </a>
       )}
 
@@ -207,9 +207,10 @@ function MyTrackCard({ track, index }: { track: MyTrack; index: number }) {
           target="_blank"
           rel="noopener noreferrer"
           className="mono"
-          style={{ flexShrink: 0, fontSize: '0.65rem', letterSpacing: '0.04em', color: 'var(--muted)', textDecoration: 'none' }}
+          style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.65rem', letterSpacing: '0.04em', color: 'var(--muted)', textDecoration: 'none' }}
         >
-          {source} ↗
+          {/* a drawn icon, not the "↗" character: phones show that character as a colourful emoji */}
+          {source}<ArrowUpRight size={13} aria-hidden="true" />
         </a>
       </div>
     </motion.div>

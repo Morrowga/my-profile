@@ -8,6 +8,7 @@ import { MENU } from '@/lib/planets';
 import ZoomTransition        from '@/components/ui/ZoomTransition';
 import Cursor                from '@/components/ui/Cursor';
 import BackButton            from '@/components/ui/BackButton';
+import AboutViewToggle       from '@/components/sections/about/AboutViewToggle';
 import PlanetSwitcher         from '@/components/ui/PlanetSwitcher';
 import Hero                  from '@/components/sections/Hero';
 import About                 from '@/components/sections/About';
@@ -50,8 +51,8 @@ export default function Home() {
   const Content = SECTION_CONTENT[activeSection];
 
   return (
-    <div style={{
-      width: '100vw', height: '100vh',
+    <div className="app-root" style={{
+      width: '100vw',
       overflow: 'hidden', position: 'relative', background: '#000',
       ...accentVars,
     }}>
@@ -91,7 +92,7 @@ export default function Home() {
         </AnimatePresence>
       </div>
 
-      {!isHero && <BackButton />}
+      {!isHero && <BackButton>{activeSection === 'about' && <AboutViewToggle />}</BackButton>}
       {!isHero && <PlanetSwitcher key={activeSection} id={activeSection} />}
     </div>
   );
