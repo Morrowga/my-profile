@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
-
 :root {
   --bg: #050508;
   --surface: rgba(255,255,255,0.04);
@@ -14,17 +12,18 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+button, input, textarea, select { font-family: inherit; }   /* browsers default these to Arial */
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Syne', sans-serif;
+  font-family: 'Science Gothic', sans-serif;
   overflow-x: hidden;
 }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.mono { font-family: 'Space Mono', monospace; }
+.mono { font-family: 'Lato', sans-serif; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -73,7 +72,7 @@ body {
 
 @media (max-width: 768px) {
   .section-wrapper {
-    padding: 3rem 1.25rem 6.5rem 1.25rem !important;
+    padding: 5rem 1.25rem 4rem 1.25rem !important;
   }
 }
 
@@ -122,3 +121,293 @@ body {
     font-size: 1.6rem !important;
   }
 }
+/* ───────── Home menu (PlayStation-style vertical menu) ───────── */
+.menu-panel {
+  position: absolute; top: 0; bottom: 0; left: 58%; right: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  z-index: 5; user-select: none;
+}
+.menu-list {
+  position: relative; height: 100%;
+  /* no mask: items already fade by distance (cheaper than compositing a mask every frame) */
+}
+.menu-item {
+  position: absolute; left: 0; top: 50%; height: 4rem; margin-top: -2rem;
+  display: flex; align-items: center; gap: 1.1rem;
+  background: none; border: none; color: #fff; cursor: pointer; text-align: left;
+  font-family: 'Science Gothic', sans-serif; padding: 0 0.5rem 0 2rem;
+  will-change: transform, opacity;
+  outline: none; -webkit-tap-highlight-color: transparent;   /* no green frame or flash when tapped */
+}
+.menu-item:focus, .menu-item:focus-visible, .menu-item:active { outline: none; }
+.menu-text { display: flex; flex-direction: column; gap: 0.25rem; }
+.menu-label {
+  display: block; transform-origin: left center;
+  font-size: 3rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.05;
+}
+.menu-marker {
+  position: absolute; left: 0; top: 50%; width: 3px; height: 3.2rem; margin-top: -1.6rem;
+  background: var(--accent); box-shadow: 0 0 16px var(--accent); border-radius: 2px;
+}
+
+/* Name + role, top-right of the home screen */
+.home-id {
+  position: absolute; top: 1.75rem; right: 2.25rem; z-index: 6;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;
+  text-align: right; pointer-events: none; text-shadow: 0 0 14px rgba(0,0,0,0.8);
+}
+.home-name { font-family: 'Science Gothic', sans-serif; font-size: 1.15rem; font-weight: 800; letter-spacing: 0.28em; color: #fff; }
+.home-role { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+
+/* Phones: planet sits at the bottom (half visible), menu is centred above it */
+@media (max-width: 768px) {
+  .menu-panel { left: 0; right: 0; bottom: 38%; }
+  .menu-item {
+    left: 0; right: 0; justify-content: center;
+    padding: 0; gap: 0; height: 3.4rem; margin-top: -1.7rem;
+  }
+  .menu-label { font-size: 2.1rem; transform-origin: center; }
+  .menu-marker { left: 16%; height: 2.4rem; margin-top: -1.2rem; }
+  .home-id { top: 1.25rem; right: 1.25rem; gap: 0.3rem; }
+  .home-name { font-size: 0.9rem; letter-spacing: 0.22em; }
+  .home-role { font-size: 0.6rem; letter-spacing: 0.18em; }
+}
+
+/* ───────── Planet switcher (top-right corner of every page) ───────── */
+.switcher {
+  position: fixed; top: 0.55rem; right: 1.1rem; z-index: 30;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.switcher-tray {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.4rem 1.1rem; border-radius: 999px;
+  background: rgba(8, 8, 14, 0.62);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.switcher-arrow {
+  position: relative; flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(8, 8, 14, 0.62);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.switcher-arrow:hover, .switcher-arrow:focus-visible {
+  border-color: var(--accent); box-shadow: 0 0 14px var(--glow); outline: none;
+}
+
+/* current page marker */
+.switcher-current { position: relative; flex-shrink: 0; width: 64px; height: 64px; border-radius: 50%; outline: none; }
+
+/* loading indicator: shows from the moment the page opens until the planet is drawn */
+.switcher-loader {
+  position: absolute; inset: 3px; border-radius: 50%; pointer-events: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.12); border-top-color: var(--accent);
+  animation: switcher-spin 0.9s linear infinite;
+  transition: opacity 0.4s ease;
+}
+.switcher-current[data-ready='true'] .switcher-loader { opacity: 0; }
+@keyframes switcher-spin { to { transform: rotate(360deg); } }
+.switcher-current .pdot-tip { top: calc(100% + 16px); left: auto; right: 0; transform: translateY(-3px); }   /* right-aligned: it sits at the screen edge */
+.switcher-current:hover .pdot-tip, .switcher-current:focus-visible .pdot-tip { opacity: 1; transform: translateY(0); }
+
+/* one small planet: a texture slides sideways inside a circle */
+.pdot {
+  position: relative; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%;
+  background: none; cursor: pointer; flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.pdot:hover:not(:disabled), .pdot:focus-visible { transform: scale(1.15); outline: none; }
+.pdot:disabled { cursor: wait; opacity: 0.6; }
+.pdot-sphere {
+  position: absolute; inset: 0; border-radius: 50%; overflow: hidden; z-index: 1;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--glow) 55%, transparent);
+}
+.pdot-sphere::after {   /* round shading */
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%);
+}
+.pdot-tex {
+  position: absolute; top: 0; left: 0; height: 100%; width: 200%;
+  background-image: var(--tex); background-repeat: repeat-x; background-size: 50% 100%;
+  animation: pdot-spin 16s linear infinite; will-change: transform;
+}
+@keyframes pdot-spin { to { transform: translateX(-50%); } }
+.pdot:hover .pdot-tex { animation-duration: 6s; }
+
+/* ringed planet: smaller ball, ring behind + front half over it */
+.pdot--ring .pdot-sphere { inset: 17%; }
+.pdot-ring {
+  position: absolute; left: 50%; top: 50%; width: 66px; aspect-ratio: 1;
+  background-image: var(--ring); background-size: contain; background-repeat: no-repeat;
+  transform: translate(-50%, -50%) rotate(-22deg) scaleY(0.42); pointer-events: none;
+}
+.pdot-ring--back { z-index: 0; }
+.pdot-ring--front { z-index: 2; clip-path: inset(50% 0 0 0); }
+
+/* tooltip with the planet's name */
+.pdot-tip {
+  position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(-3px);
+  z-index: 5; white-space: nowrap; pointer-events: none;
+  padding: 0.28rem 0.6rem; border-radius: 6px;
+  background: rgba(8, 8, 14, 0.92); border: 1px solid rgba(255, 255, 255, 0.14);
+  font: 700 0.68rem/1 'Lato', sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
+  opacity: 0; transition: opacity 0.15s, transform 0.15s;
+}
+.pdot:hover .pdot-tip, .pdot:focus-visible .pdot-tip,
+.switcher-arrow:hover .pdot-tip, .switcher-arrow:focus-visible .pdot-tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 768px) {
+  /* no room next to the Back button: the row drops below the corner planet */
+  .switcher { right: 1rem; }
+  .switcher-tray {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    flex-wrap: nowrap; gap: 0.9rem; padding: 0.5rem 0.8rem 1.4rem; border-radius: 16px;
+  }
+  .pdot { width: 32px; height: 32px; }
+  .pdot-ring { width: 56px; }
+  .pdot-tip { opacity: 0.9; font-size: 0.52rem; padding: 0.2rem 0.35rem; top: calc(100% + 4px); }
+}
+@media (hover: none) {
+  .pdot-tip { opacity: 0.9; }
+}
+@media (max-width: 768px), (hover: none) {
+  .switcher-arrow .pdot-tip { display: none; }   /* the arrow's label is only for mouse hover */
+  .switcher-current .pdot-tip { display: none; }   /* "You are here" would sit on top of the planet row */
+}
+
+/* spinner used while embedded players load */
+.spin-ring {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.12); border-top-color: var(--accent);
+  animation: switcher-spin 0.9s linear infinite;
+}
+
+/* Apps page: three apps per row (two on tablets, one on phones) */
+.apps-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+@media (max-width: 1100px) { .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 768px) { .apps-grid { grid-template-columns: 1fr; } }
+a.store-logo:hover, a.store-logo:focus-visible { transform: translateY(-3px) scale(1.1); filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5)); outline: none; }
+
+/* store logo with no store page yet: disabled look + "Coming soon" tooltip */
+.store-logo--static { position: relative; cursor: not-allowed; outline: none; }
+.store-logo--static img { opacity: 0.4; filter: grayscale(0.75); transition: opacity 0.2s; }
+.store-logo--static:hover img, .store-logo--static:focus-visible img { opacity: 0.6; }
+.store-logo--static::after {
+  content: attr(data-tip);
+  position: absolute; top: calc(100% + 10px); left: 50%;   /* under the logo: the app name is above it */
+  transform: translateX(-50%) translateY(-3px); white-space: nowrap; pointer-events: none; z-index: 5;
+  padding: 0.3rem 0.6rem; border-radius: 6px; line-height: 1;
+  background: rgba(8, 8, 14, 0.95); border: 1px solid rgba(255, 255, 255, 0.14);
+  font: 700 0.66rem/1 'Lato', sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
+  opacity: 0; transition: opacity 0.15s, transform 0.15s;
+}
+.store-logo--static:hover::after, .store-logo--static:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Lab page: experiment gallery (3 per row, 2 on tablets, 1 on phones) */
+.lab-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+@media (max-width: 1100px) { .lab-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 768px) { .lab-grid { grid-template-columns: 1fr; } }
+.lab-card { transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
+.lab-card:hover, .lab-card:focus-visible { transform: translateY(-5px); border-color: var(--accent) !important; box-shadow: 0 14px 40px rgba(0,0,0,0.45), 0 0 24px var(--glow); outline: none; }
+
+/* moving dashes on the arrows that are active in the architecture diagram */
+.edge-on { stroke-dasharray: 8 7; animation: edge-flow 0.7s linear infinite; }
+@keyframes edge-flow { to { stroke-dashoffset: -15; } }
+
+/* Lab → Checkout demo: shop on the left, order summary on the right */
+.checkout-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1.25rem; }
+@media (max-width: 900px) { .checkout-grid { grid-template-columns: 1fr; } }
+
+/* Lab → Checkout: one row of the "Try breaking it" panel (label on the left, switches on the right) */
+.scenario-row { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 1rem; align-items: start; }
+.scenario-label { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); padding-top: 0.4rem; }
+.scenario-label small { display: block; margin-top: 3px; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: none; color: var(--muted); }
+@media (max-width: 700px) { .scenario-row { grid-template-columns: 1fr; gap: 0.5rem; } .scenario-label { padding-top: 0; } }
+
+/* Lab → highest traffic product: the moving line between two steps */
+.flow-line { position: absolute; height: 2px; border-radius: 2px; }
+.flow-line--v { width: 2px; height: auto; margin-left: -1px; }
+.flow-line--on {
+  background: repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 11px);
+  background-size: 11px 2px; animation: flow-move 0.5s linear infinite;
+}
+.flow-line--v.flow-line--on {
+  background: repeating-linear-gradient(180deg, var(--accent) 0 6px, transparent 6px 11px);
+  background-size: 2px 11px; animation: flow-move-v 0.5s linear infinite;
+}
+@keyframes flow-move { to { background-position: 11px 0; } }
+@keyframes flow-move-v { to { background-position: 0 11px; } }
+
+/* Lab: the page never scrolls sideways; only the inner panels do, with the scrollbar hidden */
+.lab-bleed { margin: 0; }
+.lab-hscroll { scrollbar-width: none; -ms-overflow-style: none; overscroll-behavior-x: contain; }
+.lab-hscroll::-webkit-scrollbar { display: none; }
+
+/* phone: the controls slide sideways in one line instead of wrapping */
+@media (max-width: 768px) {
+  .lab-ctl { flex-wrap: nowrap !important; overflow-x: auto; }
+  .lab-ctl > div { flex: 0 0 auto !important; flex-wrap: nowrap !important; border-top: none !important; padding-top: 0 !important; }
+}
+
+/* every card is exactly as wide as the screen; what is inside scrolls */
+.lab-stack > * { min-width: 0; max-width: 100%; box-sizing: border-box; }
+
+/* Lab → Search: filters on the left, results on the right; on small screens the filters fold away */
+.search-grid { --pane-h: clamp(360px, calc(100vh - 18.5rem), 760px); display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 1.25rem; align-items: start; margin-bottom: -3rem; }   /* the page keeps 5rem of empty space at the bottom; use 3rem of it for the panes */
+/* both panes have the same height, so they end on the same line, and each one scrolls inside itself */
+.search-filters { height: var(--pane-h); overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; align-content: start; }
+.search-list { overscroll-behavior: contain; }
+.search-toggle { display: none; margin-bottom: 0.75rem; }
+.search-filters input::placeholder { color: rgba(255, 255, 255, 0.35); }
+.search-filters input:focus { border-color: var(--accent) !important; }
+@media (max-width: 900px) {
+  .search-grid { grid-template-columns: minmax(0, 1fr); }
+  .search-toggle { display: flex; }
+  .search-filters { height: auto; max-height: 60vh; }
+  .search-filters[data-open='false'] { display: none !important; }
+}
+
+/* Lab → Search: round scroll bars that sit inside the rounded panes (no square track) */
+.search-filters, .search-list { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.28) transparent; }
+.search-filters::-webkit-scrollbar, .search-list::-webkit-scrollbar { width: 8px; }
+.search-filters::-webkit-scrollbar-track, .search-list::-webkit-scrollbar-track { background: transparent; margin: 14px 0; border-radius: 999px; }
+.search-filters::-webkit-scrollbar-thumb, .search-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.28); border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
+.search-filters::-webkit-scrollbar-thumb:hover, .search-list::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--accent) 70%, transparent); background-clip: content-box; }
+
+/* Lab: descriptions and data use Lato; titles keep the site font (Science Gothic); small .mono labels also use Lato */
+.lab-root { font-family: 'Lato', sans-serif; }
+.lab-root h1, .lab-root h2, .lab-root h3, .lab-root .lab-title { font-family: 'Science Gothic', sans-serif; }
+
+/* Lab → Search → How it works: a tree of nodes. One root, three branches side by side, each branch a chain of steps */
+.steps-wrap { width: 100%; min-width: 0; }
+.steps-wrap .steps-link { width: 2px; height: 22px; background: color-mix(in srgb, var(--accent) 55%, transparent); position: relative; }
+.steps-wrap .steps-link::after {   /* small arrow head */
+  content: ''; position: absolute; bottom: -1px; left: -3px; border: 4px solid transparent; border-top-color: color-mix(in srgb, var(--accent) 80%, transparent); border-bottom: 0;
+}
+.steps-tree {
+  --g: 1.25rem; margin-top: 22px; position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--g); padding-top: 34px; align-items: start;
+  /* one row for the branch title, then (link, card) four times: the same row in every branch is as tall as the tallest card */
+  grid-template-rows: auto repeat(4, 22px auto);
+}
+.steps-branch { position: relative; display: grid; grid-row: 1 / span 9; grid-template-rows: subgrid; align-items: stretch; justify-items: stretch; min-width: 0; }
+.steps-branch > .steps-link { justify-self: center; }
+.steps-branch::before { content: ''; position: absolute; top: -34px; left: calc(50% - 1px); width: 2px; height: 34px; background: color-mix(in srgb, var(--accent) 55%, transparent); }
+.steps-rail { position: absolute; top: 0; height: 2px; left: calc((100% - 2 * var(--g)) / 6); right: calc((100% - 2 * var(--g)) / 6); background: color-mix(in srgb, var(--accent) 55%, transparent); }
+.steps-tree::before { content: ''; position: absolute; top: -22px; left: calc(50% - 1px); width: 2px; height: 22px; background: color-mix(in srgb, var(--accent) 55%, transparent); }
+@media (max-width: 900px) {
+  .steps-tree { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: 34px; }
+  .steps-branch { display: flex; flex-direction: column; align-items: center; grid-row: auto; }
+  .steps-rail { display: none; }
+  .steps-tree::before { display: none; }
+}
+
+/* dialog body: scrolls inside, with the same round scroll bar as the search panes */
+.dialog-scroll { overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.28) transparent; }
+.dialog-scroll::-webkit-scrollbar { width: 8px; }
+.dialog-scroll::-webkit-scrollbar-track { background: transparent; margin: 8px 0; border-radius: 999px; }
+.dialog-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.28); border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
+.dialog-scroll::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--accent) 70%, transparent); background-clip: content-box; }

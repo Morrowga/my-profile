@@ -1,0 +1,805 @@
+{
+ "source": {
+  "name": "Kaggle: Data Science Job Posting on Glassdoor",
+  "file": "Uncleaned_DS_jobs.csv",
+  "url": "https://www.kaggle.com/datasets/rashikrahmanpritom/data-science-job-posting-on-glassdoor?select=Uncleaned_DS_jobs.csv"
+ },
+ "totals": {
+  "rawRows": 672,
+  "rawColumns": 15,
+  "cleanRows": 659,
+  "cleanColumns": 35,
+  "exactCopiesRemoved": 13,
+  "aiCostUsd": 0.25
+ },
+ "raw": {
+  "columns": [
+   "Job Title",
+   "Salary Estimate",
+   "Job Description",
+   "Rating",
+   "Company Name",
+   "Location",
+   "Headquarters",
+   "Size",
+   "Founded",
+   "Revenue",
+   "Competitors"
+  ],
+  "sample": [
+   {
+    "Job Title": "Sr Data Scientist",
+    "Salary Estimate": "$137K-$171K (Glassdoor est.)",
+    "Job Description": "Description The Senior Data Scientist is responsible for defining, building, and improving statistical models…",
+    "Rating": "3.1",
+    "Company Name": "Healthfirst\n3.1",
+    "Location": "New York, NY",
+    "Headquarters": "New York, NY",
+    "Size": "1001 to 5000 employees",
+    "Founded": "1993",
+    "Revenue": "Unknown / Non-Applicable",
+    "Competitors": "EmblemHealth, UnitedHealth Group, Aetna"
+   },
+   {
+    "Job Title": "Data Scientist",
+    "Salary Estimate": "$137K-$171K (Glassdoor est.)",
+    "Job Description": "Secure our Nation, Ignite your Future Join the top Information Technology and Analytic professionals in the i…",
+    "Rating": "4.2",
+    "Company Name": "ManTech\n4.2",
+    "Location": "Chantilly, VA",
+    "Headquarters": "Herndon, VA",
+    "Size": "5001 to 10000 employees",
+    "Founded": "1968",
+    "Revenue": "$1 to $2 billion (USD)",
+    "Competitors": "-1"
+   },
+   {
+    "Job Title": "Data Scientist",
+    "Salary Estimate": "$137K-$171K (Glassdoor est.)",
+    "Job Description": "Overview Analysis Group is one of the largest international economics consulting firms, with more than 1,000 …",
+    "Rating": "3.8",
+    "Company Name": "Analysis Group\n3.8",
+    "Location": "Boston, MA",
+    "Headquarters": "Boston, MA",
+    "Size": "1001 to 5000 employees",
+    "Founded": "1981",
+    "Revenue": "$100 to $500 million (USD)",
+    "Competitors": "-1"
+   }
+  ]
+ },
+ "steps": [
+  {
+   "id": "profile",
+   "step": 1,
+   "group": "file",
+   "title": "Look at the file",
+   "tool": "Python + pandas",
+   "why": "You cannot clean what you have not measured. The file never uses blank cells for 'missing'.",
+   "rule": "Count the fake missing values (-1, Unknown, N/A), the repeated rows and the odd formats. Change nothing.",
+   "examples": [
+    {
+     "field": "Competitors",
+     "before": "501 of 672 rows",
+     "after": "74.6% missing"
+    },
+    {
+     "field": "Revenue",
+     "before": "240 of 672 rows",
+     "after": "35.7% missing"
+    },
+    {
+     "field": "Founded",
+     "before": "118 of 672 rows",
+     "after": "17.6% missing"
+    },
+    {
+     "field": "Industry",
+     "before": "71 of 672 rows",
+     "after": "10.6% missing"
+    },
+    {
+     "field": "Sector",
+     "before": "71 of 672 rows",
+     "after": "10.6% missing"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "rows",
+     "value": "672"
+    },
+    {
+     "label": "columns",
+     "value": "15"
+    },
+    {
+     "label": "repeated rows",
+     "value": "179"
+    }
+   ],
+   "check": "Read-only step, nothing to break.",
+   "action": "Counted what is missing. Competitors is 75% empty.",
+   "primary": 0
+  },
+  {
+   "id": "missing",
+   "step": 2,
+   "group": "file",
+   "title": "Real empty values",
+   "tool": "Python + pandas",
+   "why": "A fake value like -1 is still a value, so an average would use it.",
+   "rule": "Replace -1, Unknown and N/A with one real empty value. Drop the Competitors column (74.6% empty).",
+   "examples": [
+    {
+     "field": "Rating",
+     "before": "-1",
+     "after": "empty"
+    },
+    {
+     "field": "Founded",
+     "before": "-1",
+     "after": "empty"
+    },
+    {
+     "field": "Revenue",
+     "before": "Unknown / Non-Applicable",
+     "after": "empty"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "Rating made empty",
+     "value": "50"
+    },
+    {
+     "label": "Founded made empty",
+     "value": "118"
+    },
+    {
+     "label": "Revenue made empty",
+     "value": "240"
+    },
+    {
+     "label": "column dropped",
+     "value": "Competitors"
+    }
+   ],
+   "check": "Every real value unchanged, every placeholder now empty, same rows.",
+   "action": "Turned fake blanks like -1 into real empty values.",
+   "primary": 0
+  },
+  {
+   "id": "company",
+   "step": 3,
+   "group": "data",
+   "title": "Company name",
+   "tool": "Python regex",
+   "why": "The rating was glued onto the name after a line break, so one company looked like several.",
+   "rule": "Keep the text before the line break. The Rating column is not changed, only compared.",
+   "examples": [
+    {
+     "field": "Company Name",
+     "before": "Healthfirst ⏎ 3.1",
+     "after": "Healthfirst"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "names fixed",
+     "value": "622"
+    },
+    {
+     "label": "rating mismatches listed",
+     "value": "3"
+    },
+    {
+     "label": "distinct companies",
+     "value": "432 before, 432 after"
+    }
+   ],
+   "check": "No company was split into two names, and no name became empty.",
+   "action": "Removed the rating stuck to 622 company names.",
+   "primary": 0
+  },
+  {
+   "id": "salary",
+   "step": 4,
+   "group": "data",
+   "title": "Salary",
+   "tool": "Python regex",
+   "why": "Text like '$137K-$171K' cannot be averaged or sorted.",
+   "rule": "Read the two numbers (K means thousand) and add the middle and the source.",
+   "examples": [
+    {
+     "field": "Salary Estimate",
+     "before": "$137K-$171K (Glassdoor est.)",
+     "after": "137,000 to 171,000"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "salaries read",
+     "value": "672 of 672"
+    },
+    {
+     "label": "median salary",
+     "value": "$114,000"
+    },
+    {
+     "label": "employer estimates",
+     "value": "20"
+    }
+   ],
+   "check": "Min never above max, all between $10K and $500K.",
+   "action": "Turned 672 salary texts into numbers.",
+   "primary": 0
+  },
+  {
+   "id": "ranges",
+   "step": 5,
+   "group": "data",
+   "title": "Size, revenue, founded",
+   "tool": "Python rules",
+   "why": "Ranges stored as text cannot be sorted or filtered.",
+   "rule": "Read each range into min and max numbers. An open range keeps one side empty on purpose. Age = 2020 minus founded.",
+   "examples": [
+    {
+     "field": "Size",
+     "before": "10000+ employees",
+     "after": "min 10,000 · max empty"
+    },
+    {
+     "field": "Revenue",
+     "before": "$10+ billion (USD)",
+     "after": "min 10,000,000,000 · max empty"
+    },
+    {
+     "field": "Founded",
+     "before": "1993",
+     "after": "1993 · age 27"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "open size ranges",
+     "value": "80"
+    },
+    {
+     "label": "open revenue ranges",
+     "value": "77"
+    },
+    {
+     "label": "median company age",
+     "value": "21 years"
+    }
+   ],
+   "check": "Min never above max, founded year realistic.",
+   "action": "Turned size, revenue and founded year into numbers.",
+   "primary": 0
+  },
+  {
+   "id": "location",
+   "step": 6,
+   "group": "data",
+   "title": "Location",
+   "tool": "Python rules",
+   "why": "One text cell cannot be filtered by state or by remote.",
+   "rule": "Split into city, state and a remote flag. Split the headquarters the same way, with a country.",
+   "examples": [
+    {
+     "field": "Location",
+     "before": "New York, NY",
+     "after": "New York · NY"
+    },
+    {
+     "field": "Location",
+     "before": "Remote",
+     "after": "no city, no state · is_remote = True"
+    },
+    {
+     "field": "Headquarters",
+     "before": "Bad Ragaz, Switzerland",
+     "after": "Bad Ragaz · Switzerland"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "remote jobs",
+     "value": "6"
+    },
+    {
+     "label": "HQ in the US",
+     "value": "596"
+    },
+    {
+     "label": "HQ abroad",
+     "value": "43"
+    }
+   ],
+   "check": "Every state code is a real US state. Broken values are left empty, never guessed.",
+   "action": "Split each place into city, state and remote.",
+   "primary": 0
+  },
+  {
+   "id": "title",
+   "step": 7,
+   "group": "data",
+   "title": "Job title",
+   "tool": "Python word rules",
+   "why": "172 different titles are really a few kinds of job. The role and the level are two separate things.",
+   "rule": "Role from the role words, level from the level words. No level word means not_stated, never a guess.",
+   "examples": [
+    {
+     "field": "Job Title",
+     "before": "Sr. Data Scientist II",
+     "after": "data_scientist · senior"
+    },
+    {
+     "field": "Job Title",
+     "before": "Data Science Manager",
+     "after": "data_scientist · manager"
+    },
+    {
+     "field": "Job Title",
+     "before": "Machine Learning Engineer, Sr.",
+     "after": "ml_engineer · senior"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "distinct titles",
+     "value": "172"
+    },
+    {
+     "label": "data_scientist",
+     "value": "504"
+    },
+    {
+     "label": "other",
+     "value": "39"
+    }
+   ],
+   "check": "The medians change by 0.0% when doubtful titles are removed.",
+   "action": "Grouped 172 titles into a role and a level.",
+   "primary": 0
+  },
+  {
+   "id": "duplicates",
+   "step": 8,
+   "group": "file",
+   "title": "Duplicates",
+   "tool": "Python + pandas",
+   "why": "The same job appears many times, mostly with only the salary different. No date column tells us why.",
+   "rule": "Remove only exact copies (saved in a separate file). Keep salary variants and flag them.",
+   "examples": [
+    {
+     "field": "Same job, repeated",
+     "before": "12 copies in the file",
+     "after": "2 kept, flagged"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "exact copies removed",
+     "value": "13"
+    },
+    {
+     "label": "rows flagged",
+     "value": "311"
+    },
+    {
+     "label": "rows left",
+     "value": "659"
+    }
+   ],
+   "check": "No rows lost, no exact copies left.",
+   "action": "Removed 13 exact copies and flagged 311 repeats.",
+   "primary": 0
+  },
+  {
+   "id": "extract",
+   "step": 9,
+   "group": "data",
+   "title": "Skills, years, degree",
+   "tool": "Rules + Claude Haiku 5.5",
+   "why": "The most useful facts are hidden in the long job description.",
+   "rule": "Two methods on all rows. The AI returns JSON with an exact quote, code checks the quote, a failed check is sent back to be fixed. 30 hand labels decide who is trusted.",
+   "excerpt": "…non-technical third parties TS/SCI with Polygraph Bachelor of Science or equivalent and 12-15 years related experience, but will consider all levels of experience. Desired Experience, Skills & Technologies",
+   "examples": [
+    {
+     "field": "skills (rules)",
+     "before": "found in the text",
+     "after": "SQL · Hadoop · Machine learning · Statistics"
+    },
+    {
+     "field": "Years in the text",
+     "before": "12-15 years",
+     "after": "min 12 years"
+    },
+    {
+     "field": "degree (rules)",
+     "before": "found in the text",
+     "after": "bachelor"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "AI cost, all rows",
+     "value": "$0.25"
+    },
+    {
+     "label": "AI repairs needed",
+     "value": "4"
+    },
+    {
+     "label": "rows with years",
+     "value": "460"
+    }
+   ],
+   "check": "Years 0 to 20, and every quote must be copied word for word from the description.",
+   "action": "Read skills, years and degree from the long text.",
+   "primary": 1
+  },
+  {
+   "id": "validate",
+   "step": 10,
+   "group": "file",
+   "title": "Final check",
+   "tool": "Python + pandas",
+   "why": "Each step checked its own column. This checks that all columns still make sense together.",
+   "rule": "20 checks on every row. A failing row is listed for review, never deleted or changed.",
+   "examples": [
+    {
+     "field": "Result",
+     "before": "20 checks",
+     "after": "0 failed"
+    }
+   ],
+   "numbers": [
+    {
+     "label": "checks",
+     "value": "20"
+    },
+    {
+     "label": "failures",
+     "value": "0"
+    },
+    {
+     "label": "salaries above $300K (kept, real)",
+     "value": "21"
+    }
+   ],
+   "check": "It catches impossible values. It cannot prove a value is true.",
+   "action": "Ran 20 checks on every row. 0 failed.",
+   "primary": 0
+  }
+ ],
+ "story": {
+  "before": [
+   [
+    "Job Title",
+    "Sr Data Scientist"
+   ],
+   [
+    "Company Name",
+    "Healthfirst ⏎ 3.1"
+   ],
+   [
+    "Salary Estimate",
+    "$137K-$171K (Glassdoor est.)"
+   ],
+   [
+    "Location",
+    "New York, NY"
+   ]
+  ],
+  "after": [
+   [
+    "role",
+    "data_scientist · senior"
+   ],
+   [
+    "company",
+    "Healthfirst"
+   ],
+   [
+    "salary",
+    "137,000 to 171,000"
+   ],
+   [
+    "skills",
+    "AWS · Azure · Machine learning · Statistics"
+   ]
+  ]
+ },
+ "scores": {
+  "labelled_rows": 30,
+  "methods": {
+   "rules": {
+    "years_right": 24,
+    "degree_right": 24,
+    "skills_f1": 0.801,
+    "skills_precision": 0.675,
+    "skills_recall": 0.986
+   },
+   "Haiku": {
+    "years_right": 26,
+    "degree_right": 23,
+    "skills_f1": 0.813,
+    "skills_precision": 0.691,
+    "skills_recall": 0.986
+   }
+  },
+  "estimate_all_rows": {
+   "years": {
+    "rules": 0.84,
+    "haiku": 0.89
+   },
+   "degree": {
+    "rules": 0.895,
+    "haiku": 0.882
+   }
+  }
+ },
+ "preview": {
+  "columns": [
+   "index",
+   "job_title",
+   "title_family",
+   "seniority",
+   "company",
+   "city",
+   "state",
+   "salary_mid",
+   "skills",
+   "min_years",
+   "degree_required"
+  ],
+  "rows": [
+   {
+    "index": "393",
+    "job_title": "Data Engineer",
+    "title_family": "data_engineer",
+    "seniority": "not_stated",
+    "company": "Kingfisher Systems",
+    "city": "Falls Church",
+    "state": "VA",
+    "salary_mid": "136500",
+    "skills": [
+     "Python",
+     "SQL"
+    ],
+    "min_years": "3",
+    "degree_required": "bachelor"
+   },
+   {
+    "index": "249",
+    "job_title": "Computer Scientist 1",
+    "title_family": "other",
+    "seniority": "junior",
+    "company": "Rincon Research Corporation",
+    "city": "Melbourne",
+    "state": "FL",
+    "salary_mid": "107000",
+    "skills": [
+     "Python",
+     "Java",
+     "C++",
+     "MATLAB",
+     "Machine learning"
+    ],
+    "min_years": null,
+    "degree_required": "bachelor"
+   },
+   {
+    "index": "189",
+    "job_title": "Principal Data Scientist - Machine Learning",
+    "title_family": "data_scientist",
+    "seniority": "lead",
+    "company": "Constant Contact",
+    "city": "Waltham",
+    "state": "MA",
+    "salary_mid": "76500",
+    "skills": [
+     "Python",
+     "R",
+     "Scala",
+     "Spark",
+     "Hadoop",
+     "AWS",
+     "GCP",
+     "Machine learning"
+    ],
+    "min_years": null,
+    "degree_required": "master"
+   },
+   {
+    "index": "45",
+    "job_title": "Computational Scientist, Machine Learning",
+    "title_family": "data_scientist",
+    "seniority": "not_stated",
+    "company": "Pfizer",
+    "city": "Cambridge",
+    "state": "MA",
+    "salary_mid": "103000",
+    "skills": [
+     "Python",
+     "TensorFlow",
+     "PyTorch",
+     "Keras",
+     "Deep learning",
+     "Machine learning"
+    ],
+    "min_years": null,
+    "degree_required": "phd"
+   },
+   {
+    "index": "287",
+    "job_title": "Data Scientist",
+    "title_family": "data_scientist",
+    "seniority": "not_stated",
+    "company": "Oshkosh Corporation",
+    "city": "Oshkosh",
+    "state": "WI",
+    "salary_mid": "183000",
+    "skills": [
+     "Python",
+     "SQL",
+     "Spark",
+     "Hadoop",
+     "Hive",
+     "Kafka"
+    ],
+    "min_years": "3",
+    "degree_required": "bachelor"
+   },
+   {
+    "index": "667",
+    "job_title": "Data Scientist",
+    "title_family": "data_scientist",
+    "seniority": "not_stated",
+    "company": "TRANZACT",
+    "city": "Fort Lee",
+    "state": "NJ",
+    "salary_mid": "136000",
+    "skills": [
+     "Python",
+     "SQL",
+     "Hadoop",
+     "Machine learning",
+     "Statistics",
+     "Tableau",
+     "Power BI",
+     "Excel"
+    ],
+    "min_years": "2",
+    "degree_required": "bachelor"
+   },
+   {
+    "index": "72",
+    "job_title": "Principal Data Scientist",
+    "title_family": "data_scientist",
+    "seniority": "lead",
+    "company": "Autodesk",
+    "city": "San Francisco",
+    "state": "CA",
+    "salary_mid": "105000",
+    "skills": [
+     "Python",
+     "R",
+     "MATLAB",
+     "Spark",
+     "Hadoop",
+     "Hive",
+     "AWS",
+     "Azure",
+     "GCP",
+     "Machine learning",
+     "Statistics"
+    ],
+    "min_years": null,
+    "degree_required": "not_stated"
+   },
+   {
+    "index": "485",
+    "job_title": "Data Scientist",
+    "title_family": "data_scientist",
+    "seniority": "not_stated",
+    "company": "Cambridge Mobile Telematics",
+    "city": "Cambridge",
+    "state": "MA",
+    "salary_mid": "43500",
+    "skills": [
+     "Python",
+     "Spark",
+     "AWS",
+     "Pandas",
+     "NumPy",
+     "Machine learning",
+     "Statistics"
+    ],
+    "min_years": "5",
+    "degree_required": "master"
+   },
+   {
+    "index": "89",
+    "job_title": "Data Scientist",
+    "title_family": "data_scientist",
+    "seniority": "not_stated",
+    "company": "Mars",
+    "city": null,
+    "state": null,
+    "salary_mid": "105000",
+    "skills": [
+     "Python",
+     "Spark",
+     "AWS",
+     "Machine learning",
+     "Statistics"
+    ],
+    "min_years": "1",
+    "degree_required": "bachelor"
+   },
+   {
+    "index": "42",
+    "job_title": "Data Analyst I",
+    "title_family": "data_analyst",
+    "seniority": "junior",
+    "company": "Cenlar",
+    "city": "Ewing",
+    "state": "NJ",
+    "salary_mid": "103000",
+    "skills": [
+     "SQL",
+     "Statistics"
+    ],
+    "min_years": "3",
+    "degree_required": "bachelor"
+   },
+   {
+    "index": "238",
+    "job_title": "Senior Data Analyst",
+    "title_family": "data_analyst",
+    "seniority": "senior",
+    "company": "Life360",
+    "city": "San Francisco",
+    "state": "CA",
+    "salary_mid": "97000",
+    "skills": [
+     "Python",
+     "SQL",
+     "R",
+     "Statistics",
+     "Tableau"
+    ],
+    "min_years": null,
+    "degree_required": "not_stated"
+   },
+   {
+    "index": "511",
+    "job_title": "Data Scientist(s)/Machine Learning Engineer",
+    "title_family": "data_scientist",
+    "seniority": "not_stated",
+    "company": "Blue Horizon Tek Solutions",
+    "city": "New York",
+    "state": "NY",
+    "salary_mid": "271500",
+    "skills": [
+     "Python",
+     "Java",
+     "Machine learning",
+     "Statistics"
+    ],
+    "min_years": "1",
+    "degree_required": "bachelor"
+   }
+  ]
+ },
+ "links": {
+  "clean": "/lab/data-cleaning/clean.csv",
+  "uncleanSample": "/lab/data-cleaning/unclean_sample.csv",
+  "descriptions": null,
+  "source": "https://www.kaggle.com/datasets/rashikrahmanpritom/data-science-job-posting-on-glassdoor?select=Uncleaned_DS_jobs.csv"
+ }
+}

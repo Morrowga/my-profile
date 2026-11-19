@@ -3,8 +3,53 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Images, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { FROST } from '@/lib/styles';
+import PillTabs from '@/components/ui/PillTabs';
+import ProblemSolving, { PROBLEM_COUNT } from './ProblemSolving';
 
 const PROJECTS = [
+    {
+      id: 17,
+      title: 'ASPM Scan - Security issue management',
+      subtitle: 'Finds security problems in code repositories and WordPress sites and ranks what to fix first',
+      description: 'ASPM Scan checks code repositories and WordPress sites for leaked secrets, vulnerable packages, outdated plugins and exposed sites. It ranks every issue from P1 (fix now) to P4, lets the team decide what to do with each one, and keeps a tamper-evident audit log of every decision. It only reads: it never changes a project or stores a private key. Available in English and Japanese.',
+      tags: ['Python', 'FastAPI', 'SQLite', 'React', 'TypeScript', 'Tailwind CSS'],
+      accent: 'var(--accent)',
+      status: 'Development',
+      year: '2026',
+      github: { disabled: true, repo: 'Private' },
+      website: { show: false, url: '', name: 'ASPM Scan' },
+      imageCount: 10,
+      imageDir: '17',
+    },
+    {
+      id: 16,
+      title: 'ADVAR - Ad testing simulator',
+      subtitle: 'Test an ad on a virtual audience of AI agents before paying for the real campaign',
+      description: 'ADVAR tests an ad, a boosted post or an organic post on a virtual audience of AI agents inside simulated social feeds (Facebook, Instagram, TikTok), before the real campaign is paid for. The backend is a FastAPI API with a background worker and a NumPy simulation engine; the frontend is built on top of this API.',
+      tags: ['Python', 'TypeScript', 'React', 'PostgreSQL'],
+      accent: 'var(--accent)',
+      status: 'Development',
+      year: '2026',
+      github: { disabled: false, repo: 'Morrowga/ads-simulation' },
+      website: { show: false, url: '', name: 'ADVAR' },
+      imageCount: 3,
+      imageDir: '16',
+    },
+    {
+      id: 15,
+      title: 'Pixel Ex - Question Explainer',
+      subtitle: 'Animated pixel-art explanations for any question, written for complete beginners',
+      description: 'Type any question and get a short, animated, step-by-step explanation in simple words. It teaches with a real-life example first, then connects it to the real topic, and ends with a check question to see if it landed. The answer is never shown in the question. Works for general knowledge, school math, word problems and unclear questions, in English, Japanese and Burmese.',
+      tags: ['TypeScript', 'React', 'OpenAI'],
+      accent: 'var(--accent)',
+      status: 'Development',
+      year: '2026',
+      github: { disabled: false, repo: 'Morrowga/pixel-ex' },
+      website: { show: false, url: '', name: 'Pixel Ex' },
+      imageCount: 2,
+      imageDir: '15',
+    },
     {
       id: 14,
       title: 'Levelt - AI-powered exam & interview prep',
@@ -160,20 +205,6 @@ const PROJECTS = [
     imageDir: '8',
   },
   {
-    id: 2,
-    title: 'Lead Capture Automation',
-    subtitle: 'Capturing Lead Data',
-    description: "Captures lead data from webhooks with duplicate email detection and automated scoring. Stores results in Google Sheets and sends alerts to Discord or Slack, with error handling via email notifications. Also includes CRM integration with HubSpot.",
-    tags: ['N8N', 'Google Sheets', 'Javascript','Json','Discord', 'Slack', 'Hubspot'],
-    accent: 'var(--accent)',
-    status: 'Deployment in Progress',
-    year: '2025',
-    github: { disabled: false, repo: 'Morrowga' },
-    website: null,
-    imageCount: 0,
-    imageDir: '0',
-  },
-  {
     id: 1,
     title: 'Past Experience',
     subtitle: 'Prior Professional Projects',
@@ -199,8 +230,18 @@ const PROJECTS = [
   },
 ];
 
+// Which tab each project belongs to (everything not listed here is a company project)
+const OWN_PROJECT_IDS = new Set([16, 15, 14, 13, 12, 10, 8, 7, 6]); // ADVAR, Pixel Ex, Levelt, CallConfirm, ANTS, ITK, Immortal AI, Intellect, GlamAI
+
+type Tab = 'company' | 'own' | 'problems';
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'company', label: 'Company projects' },
+  { id: 'own', label: 'My own projects' },
+  { id: 'problems', label: 'Problem solving' },
+];
+
 function buildImages(dir: string, count: number): string[] {
-  return Array.from({ length: count }, (_, i) => `/images/${dir}/${i + 1}.jpg`);
+  return Array.from({ length: count }, (_, i) => `/images/${dir}/${i + 1}.webp`);
 }
 
 function useIsMobile() {
@@ -420,7 +461,7 @@ function GitHubButton({ disabled, repo }: { disabled: boolean; repo: string }) {
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/>
       </svg>
-      <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', letterSpacing: '0.02em' }}>{repo}</span>
+      <span style={{ fontSize: '0.65rem', fontFamily: 'Lato, sans-serif', letterSpacing: '0.02em' }}>{repo}</span>
     </>
   );
 
@@ -524,7 +565,7 @@ function WebsiteButton({ url, name }: { url: string; name: string }) {
       }}
     >
       <ExternalLink size={12} />
-      {!isMobile && <span style={{ fontFamily: 'monospace', letterSpacing: '0.02em' }}>{name}</span>}  {/* hide on mobile */}
+      {!isMobile && <span style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '0.02em' }}>{name}</span>}  {/* hide on mobile */}
     </a>
   );
 }
@@ -551,7 +592,7 @@ function GalleryIconButton({ onClick }: { onClick: () => void }) {
       }}
     >
       <Images size={13} />
-      {!isMobile && <span style={{ fontFamily: 'monospace', letterSpacing: '0.02em' }}>Gallery</span>}  {/* hide on mobile */}
+      {!isMobile && <span style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '0.02em' }}>Gallery</span>}  {/* hide on mobile */}
     </button>
   );
 }
@@ -562,10 +603,15 @@ export default function Projects() {
   const inView = useInView(ref, { once: true });
   const [hovered, setHovered] = useState<number | null>(null);
   const [gallery, setGallery] = useState<{ images: string[]; title: string } | null>(null);
+  const [tab, setTab] = useState<Tab>('company');
+
+  const countOf = (t: Tab) =>
+    t === 'problems' ? PROBLEM_COUNT : PROJECTS.filter(p => OWN_PROJECT_IDS.has(p.id) === (t === 'own')).length;
+  const visible = PROJECTS.filter(p => OWN_PROJECT_IDS.has(p.id) === (tab === 'own'));
 
   return (
     <>
-      <section id="projects" className="projects-section" style={{ padding: '2rem 0', background: 'rgba(255,255,255,0.03)' }}>
+      <section id="projects" className="projects-section" style={{ padding: '2rem 0' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <motion.div
             ref={ref}
@@ -575,15 +621,22 @@ export default function Projects() {
             style={{ marginBottom: '2rem' }}
           >
             <p className="mono" style={{ color: 'var(--accent)', fontSize: '0.75rem', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-              {'// projects'}
+              Projects
             </p>
             <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, letterSpacing: '-0.02em' }}>
               Things I&apos;ve built
             </h2>
+
+            <PillTabs
+              tabs={TABS.map(t => ({ ...t, count: countOf(t.id) || undefined }))}
+              value={tab}
+              onChange={setTab}
+            />
           </motion.div>
 
-          <div className="projects-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '1.5rem' }}>
-            {PROJECTS.map((project, i) => (
+          {tab === 'problems' ? <ProblemSolving /> : (
+          <div key={tab} className="projects-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '1.5rem' }}>
+            {visible.map((project, i) => (
               <motion.div
                 key={project.id}
                 initial={{ opacity: 0, y: 40 }}
@@ -592,8 +645,8 @@ export default function Projects() {
                 onMouseEnter={() => setHovered(project.id)}
                 onMouseLeave={() => setHovered(null)}
                 style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${hovered === project.id ? project.accent : 'var(--border)'}`,
+                  ...FROST,
+                  border: `1px solid ${hovered === project.id ? project.accent : 'rgba(255,255,255,0.1)'}`,
                   borderRadius: 12,
                   padding: '2rem',
                   cursor: 'default',
@@ -636,7 +689,7 @@ export default function Projects() {
                   </div>
                 </div>
 
-                {/* <p style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, fontSize: '0.9rem', marginBottom: '1.5rem', flex: 1 }}>
+                {/* <p style={{ color: 'rgba(255,255,255,0.74)', lineHeight: 1.7, fontSize: '0.9rem', marginBottom: '1.5rem', flex: 1 }}>
                   {project.description}
                 </p> */}
                 {project.pastProjects ? (
@@ -655,7 +708,7 @@ export default function Projects() {
                         alignItems: 'center',
                         gap: '0.6rem',
                         fontSize: '0.88rem',
-                        color: 'rgba(255,255,255,0.6)',
+                        color: 'rgba(255,255,255,0.8)',
                       }}>
                         <span style={{
                           width: 5, height: 5,
@@ -678,11 +731,11 @@ export default function Projects() {
                   {project.tags.map((tag) => (
                     <span key={tag} className="mono" style={{
                       padding: '0.25rem 0.6rem',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid var(--border)',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.12)',
                       borderRadius: 4,
                       fontSize: '0.65rem',
-                      color: 'rgba(255,255,255,0.45)',
+                      color: 'rgba(255,255,255,0.7)',
                     }}>
                       {tag}
                     </span>
@@ -715,6 +768,7 @@ export default function Projects() {
               </motion.div>
             ))}
           </div>
+          )}
         </div>
       </section>
 

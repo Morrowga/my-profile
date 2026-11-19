@@ -3,27 +3,29 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAppSelector } from '@/store/hooks';
 import { SectionId } from '@/store/slices/navigationSlice';
 
-import StarField             from '@/components/ui/StarField';
+import SpaceBackground        from '@/components/ui/SpaceBackground';
+import { MENU } from '@/lib/planets';
 import ZoomTransition        from '@/components/ui/ZoomTransition';
-import PlanetNav             from '@/components/ui/PlanetNav';
 import Cursor                from '@/components/ui/Cursor';
-import MobilePlanetSidebar   from '@/components/ui/MobilePlanetSidebar';
+import BackButton            from '@/components/ui/BackButton';
+import PlanetSwitcher         from '@/components/ui/PlanetSwitcher';
 import Hero                  from '@/components/sections/Hero';
 import About                 from '@/components/sections/About';
-import Skills                from '@/components/sections/Skills';
-import Projects              from '@/components/sections/Projects';
+import Work                  from '@/components/sections/Work';
+import Lab                   from '@/components/sections/Lab';
+import Apps                  from '@/components/sections/Apps';
 import Certificates          from '@/components/sections/Certificates';
 import Contact               from '@/components/sections/Contact';
-import Activities2026        from '@/components/sections/Activities2026';
+import Life                  from '@/components/sections/Life';
 import { useEffect, useRef } from 'react';
 
 const SECTION_CONTENT: Record<SectionId, React.ComponentType> = {
-  hero: Hero, about: About, skills: Skills, projects: Projects,
-  certificates: Certificates, contact: Contact, activities2026: Activities2026,
+  hero: Hero, about: About, work: Work, lab: Lab,
+  apps: Apps, certs: Certificates, contact: Contact, life: Life,
 };
 
 export default function Home() {
-  const { activeSection } = useAppSelector(s => s.navigation);
+  const { activeSection, isTransitioning } = useAppSelector(s => s.navigation);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,15 +35,24 @@ export default function Home() {
   }, [activeSection]);
 
   const isHero  = activeSection === 'hero';
+  // Highlight colour of a page = the colour of its planet
+  const planet = MENU.find(m => m.id === activeSection);
+  const accentVars = planet && !isHero ? ({
+    '--accent': planet.glow,
+    '--accent2': 'color-mix(in srgb, var(--accent) 78%, #ffffff)',
+    '--accent3': 'color-mix(in srgb, var(--accent) 50%, #ffffff)',
+    '--glow': 'color-mix(in srgb, var(--accent) 18%, transparent)',
+  } as React.CSSProperties) : {};
   const Content = SECTION_CONTENT[activeSection];
 
   return (
     <div style={{
       width: '100vw', height: '100vh',
       overflow: 'hidden', position: 'relative', background: '#000',
+      ...accentVars,
     }}>
       <Cursor />
-      <StarField />
+      <SpaceBackground paused={isTransitioning} calm={activeSection !== 'hero'} />
       <ZoomTransition />
 
       <div style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', display: 'flex' }}>
@@ -65,7 +76,7 @@ export default function Home() {
                 className="section-wrapper"
                 style={{
                   minHeight: '100%',
-                  padding: '2rem 12rem 5rem 4rem',
+                  padding: '5rem 4rem 5rem 4rem',
                   color: '#fff',
                 }}
               >
@@ -74,29 +85,10 @@ export default function Home() {
             )}
           </motion.div>
         </AnimatePresence>
-
-        <AnimatePresence>
-          {!isHero && (
-            <motion.div
-              key="planet-nav"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 40 }}
-              transition={{ duration: 0.5 }}
-              className="desktop-planet-nav"
-              style={{
-                position: 'absolute', right: 0, top: 0, bottom: 0,
-                width: '11rem', display: 'flex', alignItems: 'flex-start', zIndex: 20,
-              }}
-            >
-              <PlanetNav />
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
-      {/* Mobile only — FAB + sidebar */}
-      {!isHero && <MobilePlanetSidebar />}
+      {!isHero && <BackButton />}
+      {!isHero && <PlanetSwitcher key={activeSection} id={activeSection} />}
     </div>
   );
 }

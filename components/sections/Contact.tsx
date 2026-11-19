@@ -1,6 +1,10 @@
 'use client';
 import { motion, useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import { FROST } from '@/lib/styles';
+
+/** How long a visitor must wait before sending another message. */
+const COOLDOWN_HOURS = 18;
 
 type FormState = { name: string; email: string; message: string };
 type Status = 'idle' | 'sending' | 'sent' | 'error';
@@ -12,7 +16,7 @@ const INPUT_STYLE = {
   border: '1px solid rgba(255,255,255,0.08)',
   borderRadius: 6,
   color: 'var(--text)',
-  fontFamily: 'Syne, sans-serif',
+  fontFamily: "'Science Gothic', sans-serif",
   fontSize: '0.9rem',
   outline: 'none',
   transition: 'border-color 0.2s',
@@ -65,7 +69,7 @@ export default function Contact() {
     const sentAt = localStorage.getItem('contact_sent_at');
     if (sentAt) {
       const hoursPassed = (Date.now() - Number(sentAt)) / (1000 * 60 * 60);
-      if (hoursPassed < 24) setAlreadySent(true);  // block for 24 hours
+      if (hoursPassed < COOLDOWN_HOURS) setAlreadySent(true);  // block for 18 hours
     }
   }, []);
 
@@ -79,7 +83,7 @@ export default function Contact() {
           style={{ marginBottom: '4rem' }}
         >
           <p className="mono" style={{ color: 'var(--accent)', fontSize: '0.75rem', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-            {'// contact'}
+            Contact
           </p>
           <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, letterSpacing: '-0.02em' }}>
             Let&apos;s build something{' '}
@@ -113,8 +117,8 @@ export default function Contact() {
             {/* Email copy */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: '1rem',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8,
+              ...FROST,
+              borderRadius: 8,
               padding: '1rem 1.25rem', marginBottom: '2rem',
             }}>
               <span className="mono" style={{ fontSize: '0.85rem', flex: 1 }}>thihaeung@gmail.com</span>
@@ -125,7 +129,7 @@ export default function Contact() {
                   background: copied ? 'var(--accent3)' : 'var(--surface2)',
                   color: copied ? '#050508' : 'var(--text)',
                   border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4,
-                  fontFamily: 'Syne, sans-serif', fontWeight: 700,
+                  fontFamily: "'Science Gothic', sans-serif", fontWeight: 700,
                   fontSize: '0.7rem', cursor: 'pointer', transition: 'all 0.2s',
                   letterSpacing: '0.05em',
                 }}
@@ -137,20 +141,19 @@ export default function Contact() {
             {/* Availability badge */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
+              ...FROST,
               padding: '0.5rem 1rem',
-              background: 'rgba(52,211,153,0.08)',
-              border: '1px solid rgba(52,211,153,0.2)',
-              borderRadius: 4, marginBottom: '2rem',
+              borderRadius: 8, marginBottom: '2rem',
             }}>
               <span style={{
                 width: 8, height: 8, borderRadius: '50%',
-                background: 'var(--accent3)',
-                boxShadow: '0 0 8px var(--accent3)',
+                background: 'var(--accent)',
+                boxShadow: '0 0 8px var(--accent)',
                 animation: 'pulse-glow 2s ease-in-out infinite',
                 display: 'inline-block',
               }} />
-              <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--accent3)' }}>
-                Available for new projects
+              <span className="mono" style={{ fontSize: '0.75rem', color: '#fff' }}>
+                Available for part-time & contract work
               </span>
             </div>
 
@@ -179,23 +182,22 @@ export default function Contact() {
           {/* Right: form */}
           {alreadySent ? (
           <div style={{
-            background: 'rgba(74,222,128,0.06)',
-            border: '1px solid rgba(74,222,128,0.2)',
+            ...FROST,
             borderRadius: 12, padding: '2rem',
             textAlign: 'center',
           }}>
             {/* <p style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>✦</p> */}
             <p style={{
-              fontFamily: 'Syne, sans-serif', fontWeight: 700,
+              fontFamily: "'Science Gothic', sans-serif", fontWeight: 700,
               color: 'var(--accent)', marginBottom: '0.5rem',
             }}>
               Message already sent
             </p>
             <p style={{
-              fontFamily: 'Space Mono, monospace',
-              fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)',
+              fontFamily: 'Lato, sans-serif',
+              fontSize: '0.7rem', color: 'var(--muted)',
             }}>
-              You can send another message after 24 hours.
+              You can send another message after {COOLDOWN_HOURS} hours.
             </p>
           </div>
         ):(
@@ -209,21 +211,20 @@ export default function Contact() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 style={{
-                  background: 'rgba(52,211,153,0.08)',
-                  border: '1px solid rgba(52,211,153,0.3)',
+                  ...FROST,
                   borderRadius: 12, padding: '3rem 2rem', textAlign: 'center',
                 }}
               >
                 {/* <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✦</div> */}
-                <h3 style={{ fontWeight: 800, marginBottom: '0.5rem', color: 'var(--accent3)' }}>Message sent!</h3>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.9rem' }}>I&apos;ll get back to you soon.</p>
+                <h3 style={{ fontWeight: 800, marginBottom: '0.5rem', color: 'var(--accent)' }}>Message sent!</h3>
+                <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem' }}>I&apos;ll get back to you soon.</p>
                 {/* <button
                   onClick={() => setStatus('idle')}
                   style={{
                     marginTop: '1.5rem', padding: '0.5rem 1.5rem',
                     background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
                     borderRadius: 4, color: 'var(--text)', cursor: 'pointer',
-                    fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: '0.85rem',
+                    fontFamily: "'Science Gothic', sans-serif", fontWeight: 600, fontSize: '0.85rem',
                   }}
                 >
                   Send another
@@ -231,7 +232,7 @@ export default function Contact() {
               </motion.div>
             ) : (
               <div style={{
-                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                ...FROST,
                 borderRadius: 12, padding: '2rem',
               }}>
                 {(['name', 'email'] as const).map((field) => (
@@ -286,7 +287,7 @@ export default function Contact() {
                     width: '100%', padding: '0.9rem',
                     background: 'var(--accent)', color: '#050508',
                     border: 'none', borderRadius: 6,
-                    fontFamily: 'Syne, sans-serif', fontWeight: 800,
+                    fontFamily: "'Science Gothic', sans-serif", fontWeight: 800,
                     fontSize: '0.9rem', letterSpacing: '0.05em',
                     cursor: status === 'sending' ? 'wait' : 'pointer',
                     opacity: status === 'sending' ? 0.7 : 1,

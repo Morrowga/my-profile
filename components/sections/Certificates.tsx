@@ -1,6 +1,11 @@
 'use client';
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
+import { FROST } from '@/lib/styles';
+import PillTabs from '@/components/ui/PillTabs';
+import Recommendations, { RECOMMENDATION_COUNT } from './Recommendations';
+
+type Tab = 'recommendations' | 'certs';
 
 const CERTS = [
   {
@@ -61,6 +66,35 @@ const PDF_WRAPPER_STYLE: React.CSSProperties = {
   overflow: 'hidden', // clips any scrollbar the iframe tries to show
 };
 
+/** PDF preview with a spinner that stays until the PDF has loaded. */
+function PdfFrame({ pdf, title, aspect, children }: { pdf: string; title: string; aspect: string; children?: React.ReactNode }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div style={{ ...PDF_WRAPPER_STYLE, aspectRatio: aspect }}>
+      <iframe
+        src={`${pdf}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-fit`}
+        style={IFRAME_STYLE}
+        title={title}
+        scrolling="no"
+        onLoad={() => setLoaded(true)}
+      />
+      <div
+        role="status"
+        aria-label="Loading certificate"
+        style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(8, 8, 14, 0.88)',
+          opacity: loaded ? 0 : 1, transition: 'opacity 0.4s ease',
+        }}
+      >
+        <span className="spin-ring" />
+      </div>
+      {children}
+    </div>
+  );
+}
+
 // ── Desktop card — compact, with embedded PDF viewer ─────────────────────────
 function DesktopCertCard({ cert, index, inView }: { cert: typeof CERTS[0]; index: number; inView: boolean }) {
   return (
@@ -69,26 +103,19 @@ function DesktopCertCard({ cert, index, inView }: { cert: typeof CERTS[0]; index
       animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 20 }}
       transition={{ duration: 0.45, delay: index * 0.08 }}
       style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
+        ...FROST,
         borderRadius: 10,
         overflow: 'hidden',
       }}
     >
       {/* PDF embed */}
-      <div style={{ ...PDF_WRAPPER_STYLE, aspectRatio: '18/10' }}>
-        <iframe
-          src={`${cert.pdf}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-fit`}
-          style={IFRAME_STYLE}
-          title={cert.title}
-          scrolling="no"
-        />
+      <PdfFrame pdf={cert.pdf} title={cert.title} aspect="18/10">
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 2,
           background: `linear-gradient(90deg, transparent, ${cert.color}, transparent)`,
           opacity: 0.7,
         }} />
-      </div>
+      </PdfFrame>
 
       {/* Info row */}
       <div style={{
@@ -97,10 +124,10 @@ function DesktopCertCard({ cert, index, inView }: { cert: typeof CERTS[0]; index
         gap: '0.5rem',
       }}>
         <div style={{ minWidth: 0 }}>
-          <p style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '0.78rem', color: '#fff', marginBottom: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <p style={{ fontFamily: "'Science Gothic', sans-serif", fontWeight: 700, fontSize: '0.78rem', color: '#fff', marginBottom: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {cert.title}
           </p>
-          <p style={{ fontFamily: 'Space Mono, monospace', fontSize: '0.6rem', color: 'var(--muted)' }}>
+          <p style={{ fontFamily: 'Lato, sans-serif', fontSize: '0.6rem', color: 'var(--muted)' }}>
             {cert.issuer} · {cert.date}
           </p>
         </div>
@@ -114,7 +141,7 @@ function DesktopCertCard({ cert, index, inView }: { cert: typeof CERTS[0]; index
             background: 'var(--surface2)',
             border: '1px solid var(--border)',
             borderRadius: 4,
-            fontFamily: 'Space Mono, monospace',
+            fontFamily: 'Lato, sans-serif',
             fontSize: '0.58rem', color: cert.color,
             textDecoration: 'none', letterSpacing: '0.05em',
             whiteSpace: 'nowrap',
@@ -168,15 +195,15 @@ function MobileCertItem({ cert, index, inView, isLast }: { cert: typeof CERTS[0]
           }}
         >
           <div>
-            <p style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '0.9rem', color: '#fff', marginBottom: '0.2rem' }}>
+            <p style={{ fontFamily: "'Science Gothic', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: '#fff', marginBottom: '0.2rem' }}>
               {cert.title}
             </p>
-            <p style={{ fontFamily: 'Space Mono, monospace', fontSize: '0.62rem', color: 'var(--muted)' }}>
+            <p style={{ fontFamily: 'Lato, sans-serif', fontSize: '0.62rem', color: 'var(--muted)' }}>
               {cert.issuer} · {cert.date}
             </p>
           </div>
           <span style={{
-            fontFamily: 'Space Mono, monospace', fontSize: '0.7rem',
+            fontFamily: 'Lato, sans-serif', fontSize: '0.7rem',
             color: 'rgba(255,255,255,0.3)',
             marginTop: 2, flexShrink: 0,
             transition: 'transform 0.2s',
@@ -192,27 +219,19 @@ function MobileCertItem({ cert, index, inView, isLast }: { cert: typeof CERTS[0]
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
             style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
+              ...FROST,
               borderRadius: 8,
               overflow: 'hidden',
             }}
           >
-            <div style={{ ...PDF_WRAPPER_STYLE, aspectRatio: '5.5/3' }}>
-              <iframe
-                src={`${cert.pdf}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-fit`}
-                style={IFRAME_STYLE}
-                title={cert.title}
-                scrolling="no"
-              />
-            </div>
+            <PdfFrame pdf={cert.pdf} title={cert.title} aspect="5.5/3" />
             <div style={{ padding: '0.6rem 0.75rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end' }}>
               <a
                 href={cert.pdf}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  fontFamily: 'Space Mono, monospace', fontSize: '0.6rem',
+                  fontFamily: 'Lato, sans-serif', fontSize: '0.6rem',
                   color: cert.color, textDecoration: 'none', letterSpacing: '0.08em',
                 }}
               >
@@ -230,6 +249,7 @@ function MobileCertItem({ cert, index, inView, isLast }: { cert: typeof CERTS[0]
 export default function Certificates() {
   const ref    = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true });
+  const [tab, setTab] = useState<Tab>('recommendations');
 
   return (
     <section id="certificates" className='certificates-section' style={{ padding: '0rem 2rem' }}>
@@ -242,13 +262,25 @@ export default function Certificates() {
           style={{ marginBottom: '2rem' }}
         >
           <p className="mono" style={{ color: 'var(--accent)', fontSize: '0.75rem', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-            {'// certificates'}
+            Certs
           </p>
           <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, letterSpacing: '-0.02em' }}>
-            Earned Badges
+            Words &amp; badges
           </h2>
+
+          <PillTabs
+            tabs={[
+              { id: 'recommendations' as Tab, label: 'Recommendations', count: RECOMMENDATION_COUNT },
+              { id: 'certs' as Tab, label: 'Certificates', count: CERTS.length },
+            ]}
+            value={tab}
+            onChange={setTab}
+          />
         </motion.div>
 
+        {tab === 'recommendations' && <Recommendations />}
+
+        {tab === 'certs' && (<>
         {/* ── DESKTOP: 2-col compact grid ── */}
         <div className="cert-desktop" style={{
           display: 'grid',
@@ -272,6 +304,7 @@ export default function Certificates() {
             />
           ))}
         </div>
+        </>)}
 
       </div>
 

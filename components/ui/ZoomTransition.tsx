@@ -2,8 +2,15 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppSelector } from '@/store/hooks';
 
+const BASE = 70; // px — the disc starts as a 70px circle and is scaled up
+
 export default function ZoomTransition() {
   const { isTransitioning } = useAppSelector(s => s.navigation);
+  // Only scale as far as needed to cover the screen (plus a margin). A larger
+  // scale means a huge layer that the GPU has to rasterise for no visual gain.
+  const cover = typeof window === 'undefined'
+    ? 30
+    : Math.ceil((Math.hypot(window.innerWidth, window.innerHeight) / BASE) * 1.25);
 
   return (
     <AnimatePresence>
@@ -13,7 +20,7 @@ export default function ZoomTransition() {
           <motion.div
             key="planet-zoom"
             initial={{ scale: 0 }}
-            animate={{ scale: 45 }}
+            animate={{ scale: cover }}
             transition={{ duration: 1.6, ease: [0.08, 0, 0.25, 1] }}
             style={{
               position: 'fixed',
@@ -24,7 +31,7 @@ export default function ZoomTransition() {
               zIndex: 998,
               pointerEvents: 'none',
               background: 'radial-gradient(circle at 38% 32%, #2a2a2a 0%, #111 40%, #000 100%)',
-              boxShadow: '0 0 80px 30px rgba(255,255,255,0.04)',
+              willChange: 'transform',
             }}
           >
             {/* Atmosphere darkening — fades in after planet is large enough */}
@@ -44,7 +51,7 @@ export default function ZoomTransition() {
           <motion.div
             key="planet-ring"
             initial={{ scale: 0, opacity: 0.5 }}
-            animate={{ scale: 44, opacity: 0 }}
+            animate={{ scale: cover - 1, opacity: 0 }}
             transition={{ duration: 1.4, ease: [0.08, 0, 0.25, 1] }}
             style={{
               position: 'fixed',
