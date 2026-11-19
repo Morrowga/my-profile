@@ -18,6 +18,7 @@ import Certificates          from '@/components/sections/Certificates';
 import Contact               from '@/components/sections/Contact';
 import Life                  from '@/components/sections/Life';
 import { useEffect, useRef } from 'react';
+import { useSectionHash } from '@/lib/useSectionHash';
 import dynamic from 'next/dynamic';
 import { LabListSkeleton } from '@/components/sections/lab/LabSkeleton';
 
@@ -32,6 +33,7 @@ const SECTION_CONTENT: Record<SectionId, React.ComponentType> = {
 export default function Home() {
   const { activeSection, isTransitioning } = useAppSelector(s => s.navigation);
   const scrollRef = useRef<HTMLDivElement>(null);
+  useSectionHash();   // the open page lives in the address (#about), so a reload does not go back to Home
 
   useEffect(() => {
     if (scrollRef.current) {
