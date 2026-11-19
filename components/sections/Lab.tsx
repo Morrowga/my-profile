@@ -1,19 +1,30 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Code, Container, Database, Search, Workflow, X, Zap, type LucideIcon } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { FROST } from '@/lib/styles';
-import TrafficShowcase from './lab/TrafficShowcase';
-import DataCleaningShowcase from './lab/DataCleaningShowcase';
-import SearchShowcase from './lab/SearchShowcase';
-import SearchSteps from './lab/SearchSteps';
-import KubernetesShowcase from './lab/KubernetesShowcase';
+import { ExperimentSkeleton } from './lab/LabSkeleton';
 
 /**
  * Lab: a menu of experiments. Click one to open it; "All experiments" goes back to the menu.
  * To add an experiment, add one object to EXPERIMENTS.
+ * Each experiment's code is downloaded only when its card is opened (and starts downloading when you point at the card),
+ * with a skeleton on screen while it arrives, so the menu itself stays light.
  * (Older experiments are kept, unused, in components/sections/lab/.)
  */
+const loadTraffic = () => import('./lab/TrafficShowcase');
+const loadDataCleaning = () => import('./lab/DataCleaningShowcase');
+const loadSearch = () => import('./lab/SearchShowcase');
+const loadKubernetes = () => import('./lab/KubernetesShowcase');
+// One import() per experiment, shared by `lazy` (opening the card) and `preload` (pointing at it), so the code is downloaded once.
+// (Writing a second import() for next/dynamic made the build ship every experiment twice.) The skeleton is the Suspense fallback below.
+const TrafficScreen = lazy(loadTraffic);
+const DataCleaningScreen = lazy(loadDataCleaning);
+const SearchScreen = lazy(loadSearch);
+const KubernetesScreen = lazy(loadKubernetes);
+const SearchSteps = dynamic(() => import('./lab/SearchSteps'), { loading: () => <span className="spin-ring" role="status" aria-label="Loading" /> });
+
 type Experiment = {
   id: string;
   title: string;
@@ -21,6 +32,7 @@ type Experiment = {
   summary: string;
   tags: string[];
   Screen?: React.ComponentType;   // no Screen = not built yet
+  preload?: () => Promise<unknown>;   // starts downloading the Screen's code (called when the card is pointed at)
   Steps?: React.ComponentType;    // "How it works" tree; when set, a button next to Source code shows it
   source_code?: boolean;          // true: show the "Source code" button, it opens repo_url
   repo_url?: string;
@@ -34,7 +46,8 @@ const EXPERIMENTS: Experiment[] = [
     icon: Zap,
     summary: '100,000 people press Buy for 100 items. Nobody is thrown out, and the fastest get the item.',
     tags: ['Waiting room', 'Rate limit', 'Redis', 'Queue + workers'],
-    Screen: TrafficShowcase,
+    Screen: TrafficScreen,
+    preload: loadTraffic,
   },
   {
     id: 'data-cleaning',
@@ -42,7 +55,8 @@ const EXPERIMENTS: Experiment[] = [
     icon: Database,
     summary: 'A real file of 672 messy job posts goes in. 659 clean rows come out, one step at a time.',
     tags: ['Python', 'Data cleaning', 'Claude Haiku'],
-    Screen: DataCleaningShowcase,
+    Screen: DataCleaningScreen,
+    preload: loadDataCleaning,
     source_code: true,
     repo_url: 'https://github.com/Morrowga/data-cleaning-for-glass-door-dataset',
   },
@@ -52,7 +66,8 @@ const EXPERIMENTS: Experiment[] = [
     icon: Search,
     summary: 'Search words, filters with live counts and a sort order work together on real research papers. Results keep loading as you scroll.',
     tags: ['Advanced search', 'Cursor paging', 'Infinite scroll', 'Virtual list'],
-    Screen: SearchShowcase,
+    Screen: SearchScreen,
+    preload: loadSearch,
     Steps: SearchSteps,
     source_code: true,
     repo_url: 'https://github.com/Morrowga/search-list-experiment-with-high-data',
@@ -63,7 +78,8 @@ const EXPERIMENTS: Experiment[] = [
     icon: Container,
     summary: 'Three copies of one app run on a small Kubernetes cluster. I killed Pods, crashed the app, stopped a whole server and added load, and recorded what happened to the customers.',
     tags: ['Kubernetes', 'Deployment', 'Containers', 'Rolling update'],
-    Screen: KubernetesShowcase,
+    Screen: KubernetesScreen,
+    preload: loadKubernetes,
     source_code: true,
     repo_url: 'https://github.com/Morrowga/k8-experiment',
   },
@@ -187,7 +203,11 @@ export default function Lab() {
             {open.title}
           </h1>
           <p style={{ color: 'var(--muted)', lineHeight: 1.6, fontSize: '0.9rem', marginBottom: '1rem' }}>{open.summary}</p>
-          {open.Screen && <open.Screen />}
+          {open.Screen && (
+            <Suspense fallback={<ExperimentSkeleton />}>
+              <open.Screen />
+            </Suspense>
+          )}
           {showSteps && open.Steps && (
             <Dialog title={`${open.title}: how it works`} onClose={() => setShowSteps(false)}>
               <open.Steps />
@@ -202,9 +222,11 @@ export default function Lab() {
               <button
                 key={exp.id}
                 type="button"
-                className={exp.soon ? undefined : 'lab-card'}
+                className={exp.soon ? 'lab-reveal' : 'lab-card lab-reveal'}
                 disabled={exp.soon}
                 aria-disabled={exp.soon}
+                onPointerEnter={() => { exp.preload?.(); }}
+                onFocus={() => { exp.preload?.(); }}
                 onClick={() => { if (!exp.soon) { setOpenId(exp.id); setShowSteps(false); } }}
                 style={{
                   ...FROST, borderRadius: 20, padding: '1.5rem', textAlign: 'left', color: '#fff', display: 'flex', flexDirection: 'column', gap: '1rem',

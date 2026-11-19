@@ -12,12 +12,16 @@ import PlanetSwitcher         from '@/components/ui/PlanetSwitcher';
 import Hero                  from '@/components/sections/Hero';
 import About                 from '@/components/sections/About';
 import Work                  from '@/components/sections/Work';
-import Lab                   from '@/components/sections/Lab';
 import Apps                  from '@/components/sections/Apps';
 import Certificates          from '@/components/sections/Certificates';
 import Contact               from '@/components/sections/Contact';
 import Life                  from '@/components/sections/Life';
 import { useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
+import { LabListSkeleton } from '@/components/sections/lab/LabSkeleton';
+
+// The Lab (with its experiments) is the heaviest page, so it is downloaded only when it is opened; a skeleton list shows meanwhile
+const Lab = dynamic(() => import('@/components/sections/Lab'), { loading: () => <LabListSkeleton /> });
 
 const SECTION_CONTENT: Record<SectionId, React.ComponentType> = {
   hero: Hero, about: About, work: Work, lab: Lab,

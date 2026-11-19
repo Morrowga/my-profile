@@ -61,10 +61,12 @@ interface Entry {
   halo?: THREE.Mesh;
   moon?: THREE.Mesh;
   slot: number;
+  ready: boolean;   // all of this planet's images (surface, ring, moon) have arrived: until then it stays hidden, so it never shows white
 }
 
 export default function PlanetStage({ index }: { index: number }) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const spinnerRef = useRef<HTMLSpanElement>(null);
   const indexRef = useRef(index);
 
   useEffect(() => {
@@ -74,6 +76,7 @@ export default function PlanetStage({ index }: { index: number }) {
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
+    const spinner = spinnerRef.current;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setClearColor(0x000000, 0);
@@ -107,7 +110,8 @@ export default function PlanetStage({ index }: { index: number }) {
     // Textures load one by one, the planet on screen first, then its neighbours.
     const jobs: { order: number; run: () => Promise<void> }[] = [];
     let disposed = false;
-    const queueTexture = (order: number, url: string, repeat: boolean, done: (t: THREE.Texture) => void) => {
+    // `settle` is called once per image, whether it loaded or failed, so a planet can never wait forever
+    const queueTexture = (order: number, url: string, repeat: boolean, done: (t: THREE.Texture) => void, settle: () => void) => {
       jobs.push({
         order,
         run: () => new Promise<void>(resolve => {
@@ -119,8 +123,9 @@ export default function PlanetStage({ index }: { index: number }) {
             disposables.push(t);
             renderer.initTexture(t);   // upload to the GPU now, not on first use
             done(t);
+            settle();
             resolve();
-          }, undefined, () => resolve());
+          }, undefined, () => { settle(); resolve(); });
         }),
       });
     };
@@ -133,6 +138,13 @@ export default function PlanetStage({ index }: { index: number }) {
       tilt.rotation.z = THREE.MathUtils.degToRad(item.tilt);
       holder.add(tilt);
 
+      // the planet shows only when its surface, ring and moon images have all arrived (one `settle` per image)
+      let waitingFor = 1 + (item.ring ? 1 : 0) + (item.moon ? 1 : 0);
+      const settle = () => {
+        if (--waitingFor > 0 || disposed) return;
+        entry.ready = true;
+      };
+
       const mat = item.emissive
         ? new THREE.MeshBasicMaterial({ color: 0xffffff, map: blank })
         : new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0, map: blank });
@@ -142,8 +154,7 @@ export default function PlanetStage({ index }: { index: number }) {
       queueTexture(Math.abs(i - indexRef.current), item.texture, true, t => {
         (mat as THREE.MeshBasicMaterial).map = t;
         mat.needsUpdate = true;
-        if (i === indexRef.current) host.style.opacity = '1';
-      });
+      }, settle);
 
       const rimMat = new THREE.ShaderMaterial({
         uniforms: {
@@ -161,7 +172,7 @@ export default function PlanetStage({ index }: { index: number }) {
       const rim = new THREE.Mesh(sphereGeo, rimMat);
       tilt.add(rim);
 
-      const entry: Entry = { holder, tilt, mesh, rim, slot: i - indexRef.current };
+      const entry: Entry = { holder, tilt, mesh, rim, slot: i - indexRef.current, ready: false };
 
       if (item.emissive) {
         haloTex = glowTexture();
@@ -188,7 +199,7 @@ export default function PlanetStage({ index }: { index: number }) {
         queueTexture(Math.abs(i - indexRef.current) + 0.5, item.ring, false, t => {
           ringMat.map = t;
           ringMat.needsUpdate = true;
-        });
+        }, settle);
       }
 
       if (item.moon) {
@@ -200,7 +211,7 @@ export default function PlanetStage({ index }: { index: number }) {
         queueTexture(Math.abs(i - indexRef.current) + 0.25, item.moon, true, t => {
           moonMat.map = t;
           moonMat.needsUpdate = true;
-        });
+        }, settle);
       }
 
       scene.add(holder);
@@ -211,9 +222,23 @@ export default function PlanetStage({ index }: { index: number }) {
     renderer.compileAsync(scene, camera).catch(() => {});
 
     jobs.sort((a, b) => a.order - b.order);
-    (async () => { for (const j of jobs) { if (disposed) return; await j.run(); } })();
+    (async () => {
+      // the planet on screen (surface, ring, moon: order below 1) loads all at once; the neighbours follow one by one
+      await Promise.all(jobs.filter(j => j.order < 1).map(j => j.run()));
+      for (const j of jobs.filter(j => j.order >= 1)) { if (disposed) return; await j.run(); }
+    })();
 
     let W = 1, H = 1, R = 1, sy = 1, mobile = false;
+
+    // the loading spinner sits where the visible part of the planet will be
+    const placeSpinner = () => {
+      if (!spinner) return;
+      const item = MENU[indexRef.current];
+      const r = R * item.scale * (item.ring && W < 768 ? 0.8 : 1);
+      spinner.style.left = `${mobile ? r * 0.45 : r * 0.5}px`;
+      spinner.style.top = `${mobile ? H - r * 0.45 : H / 2}px`;
+    };
+
     const resize = () => {
       W = host.clientWidth || window.innerWidth;
       H = host.clientHeight || window.innerHeight;
@@ -236,6 +261,7 @@ export default function PlanetStage({ index }: { index: number }) {
       camera.top = H / 2;
       camera.bottom = -H / 2;
       camera.updateProjectionMatrix();
+      placeSpinner();
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -243,16 +269,25 @@ export default function PlanetStage({ index }: { index: number }) {
 
     let raf = 0;
     let last = performance.now();
+    let revealed = false;          // the stage fades in once, when the planet on screen is ready
+    let spinnerOn = true;
+    let spinnerFor = -1;           // which planet the spinner is placed for
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       const ease = 1 - Math.exp(-dt * 6.5);
       const spacing = mobile ? W * (1 - MOBILE_CX) + R * 1.2 + 40 : H / 2 + R * sy * 1.2 + 60;
 
+      // spinner: on while the planet on screen is still waiting for its images
+      const waiting = !entries[indexRef.current]?.ready;
+      if (!waiting && !revealed) { revealed = true; host.style.opacity = '1'; }
+      if (waiting !== spinnerOn) { spinnerOn = waiting; if (spinner) spinner.dataset.on = String(waiting); }
+      if (waiting && spinnerFor !== indexRef.current) { spinnerFor = indexRef.current; placeSpinner(); }
+
       entries.forEach((e, i) => {
         const item = MENU[i];
         e.slot += (i - indexRef.current - e.slot) * ease;
-        const visible = Math.abs(e.slot) < 1.15;
+        const visible = Math.abs(e.slot) < 1.15 && e.ready;   // a planet whose images have not arrived stays hidden, never white
         e.holder.visible = visible;
         if (!visible) return;
 
@@ -301,13 +336,17 @@ export default function PlanetStage({ index }: { index: number }) {
   }, []);
 
   return (
-    <div
-      ref={hostRef}
-      aria-hidden
-      style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        opacity: 0, transition: 'opacity 0.9s ease',
-      }}
-    />
+    <>
+      <div
+        ref={hostRef}
+        aria-hidden
+        style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          opacity: 0, transition: 'opacity 0.9s ease',
+        }}
+      />
+      {/* shown from the first paint (even before the 3D code has loaded) until the planet's images have arrived */}
+      <span ref={spinnerRef} className="planet-loader" data-on="true" role="status" aria-label="Loading planet" />
+    </>
   );
 }

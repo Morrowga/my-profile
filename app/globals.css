@@ -279,6 +279,18 @@ body {
   .switcher-current .pdot-tip { display: none; }   /* "You are here" would sit on top of the planet row */
 }
 
+/* Home: a spinner where the planet will appear, until its images have arrived (PlanetStage places it exactly; this is the fallback before that code runs) */
+.planet-loader {
+  position: absolute; left: 20vw; top: 50%; z-index: 1;
+  width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%;
+  pointer-events: none;
+  border: 3px solid rgba(255, 255, 255, 0.12); border-top-color: var(--accent);
+  animation: switcher-spin 0.9s linear infinite;
+  transition: opacity 0.5s ease;
+}
+.planet-loader[data-on='false'] { opacity: 0; }
+@media (max-width: 768px) { .planet-loader { left: 18vw; top: 85vh; } }
+
 /* spinner used while embedded players load */
 .spin-ring {
   width: 34px; height: 34px; border-radius: 50%;
@@ -312,6 +324,17 @@ a.store-logo:hover, a.store-logo:focus-visible { transform: translateY(-3px) sca
 @media (max-width: 1100px) { .lab-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 768px) { .lab-grid { grid-template-columns: 1fr; } }
 .lab-card { transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
+
+/* Lab list: the cards appear one after another, and loading placeholders pulse softly */
+.lab-reveal { animation: lab-reveal 0.45s ease both; }
+.lab-grid > .lab-reveal:nth-child(2) { animation-delay: 0.11s; }
+.lab-grid > .lab-reveal:nth-child(3) { animation-delay: 0.22s; }
+.lab-grid > .lab-reveal:nth-child(4) { animation-delay: 0.33s; }
+.lab-grid > .lab-reveal:nth-child(n+5) { animation-delay: 0.44s; }
+@keyframes lab-reveal { from { opacity: 0; transform: translateY(10px); } }
+.skeleton { animation: skeleton-pulse 1.4s ease-in-out infinite; }
+@keyframes skeleton-pulse { 50% { opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) { .lab-reveal, .skeleton, .planet-loader { animation: none; } }
 .lab-card:hover, .lab-card:focus-visible { transform: translateY(-5px); border-color: var(--accent) !important; box-shadow: 0 14px 40px rgba(0,0,0,0.45), 0 0 24px var(--glow); outline: none; }
 
 /* moving dashes on the arrows that are active in the architecture diagram */
